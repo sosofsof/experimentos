@@ -1,7 +1,24 @@
-name: test
-on: workflow_dispatch
+name: import-site
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
 jobs:
-  test:
+  import:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
-      - run: echo ok
+      - uses: actions/checkout@v4
+      - name: Import site
+        run: |
+          curl -L --fail "$(cat import-url.txt)" -o /tmp/site.zip
+          mkdir -p /tmp/site
+          unzip -q /tmp/site.zip -d /tmp/site
+          rsync -a --delete --exclude='.git' --exclude='.github' /tmp/site/site-experimentos/ ./
+          rm -f import-url.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Import updated experiments site with embroidered letters'
+          git push
