@@ -1,0 +1,72 @@
+name: patch-two-fixes
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply requested fixes
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          # 1) Rolo: alinhar a calcinha ao mesmo eixo X da corda de miçangas.
+          p = Path('rolo/index.html')
+          s = p.read_text(encoding='utf-8')
+          marker = '/* align-lace-to-branch-x */'
+          if marker not in s:
+              css = '''\n<style id="align-lace-to-branch-x">\n  /* align-lace-to-branch-x */\n  .vertical-installation .scene-lace {\n    position: relative !important;\n    display: block !important;\n  }\n  .vertical-installation .scene-lace .lace-art {\n    position: absolute !important;\n    left: var(--branch-x, 50%) !important;\n    top: 50% !important;\n    transform: translate(-50%, -50%) !important;\n    margin: 0 !important;\n  }\n</style>\n'''
+              if '</head>' not in s:
+                  raise SystemExit('rolo/index.html: </head> nao encontrado')
+              s = s.replace('</head>', css + '</head>', 1)
+              p.write_text(s, encoding='utf-8')
+
+          # 2) Pecas livres: permitir repetir o mesmo asset quantas vezes quiser.
+          p = Path('pecas/index.html')
+          s = p.read_text(encoding='utf-8')
+          original = s
+
+          # Remove travas comuns do tipo "ja existe esse id em placed".
+          patterns = [
+              r'if\s*\(\s*placed\.some\(\s*p\s*=>\s*p\.id\s*===\s*a\.id\s*\)\s*\)\s*return\s*;?',
+              r'if\s*\(\s*placed\.some\(\s*p\s*=>\s*p\.id\s*===\s*asset\.id\s*\)\s*\)\s*return\s*;?',
+              r'if\s*\(\s*placed\.some\(\s*p\s*=>\s*p\.id\s*===\s*id\s*\)\s*\)\s*return\s*;?'
+          ]
+          for pat in patterns:
+              s = re.sub(pat, '', s)
+
+          # Se o catalogo marca itens como usados, neutraliza esse estado visual/disabled.
+          s = re.sub(r'const\s+used\s*=\s*placed\.some\([^;]+;?', 'const used = false;', s)
+          s = re.sub(r'let\s+used\s*=\s*placed\.some\([^;]+;?', 'let used = false;', s)
+          s = re.sub(r'var\s+used\s*=\s*placed\.some\([^;]+;?', 'var used = false;', s)
+
+          # Caso haja disabled baseado diretamente em "used", mantem sempre habilitado.
+          s = re.sub(r'\.disabled\s*=\s*used\s*;', '.disabled = false;', s)
+          s = re.sub(r'setAttribute\(\s*["\']disabled["\']\s*,\s*["\']disabled["\']\s*\)', '/* repeatable asset: disabled removed */', s)
+
+          # Garante que botoes do catalogo nunca permaneçam desabilitados depois de renderizar.
+          marker2 = '/* repeatable-sidebar-assets */'
+          if marker2 not in s:
+              js = '''\n<script id="repeatable-sidebar-assets">\n/* repeatable-sidebar-assets */\n(() => {\n  const keepAvailable = () => {\n    document.querySelectorAll('#catalog button, #catalog [role="button"], aside button').forEach(el => {\n      if (el.closest('#catalog')) {\n        el.disabled = false;\n        el.removeAttribute('aria-disabled');\n        el.classList.remove('used');\n      }\n    });\n  };\n  new MutationObserver(keepAvailable).observe(document.documentElement, {subtree:true, childList:true, attributes:true, attributeFilter:['disabled','aria-disabled','class']});\n  addEventListener('DOMContentLoaded', keepAvailable, {once:true});\n  keepAvailable();\n})();\n</script>\n'''
+              if '</body>' not in s:
+                  raise SystemExit('pecas/index.html: </body> nao encontrado')
+              s = s.replace('</body>', js + '</body>', 1)
+
+          if s == original:
+              raise SystemExit('pecas/index.html: nenhum patch aplicado')
+          p.write_text(s, encoding='utf-8')
+          PY
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add rolo/index.html pecas/index.html
+          git diff --cached --quiet && exit 0
+          git commit -m 'Fix roll alignment and allow repeated free pieces'
+          git push
