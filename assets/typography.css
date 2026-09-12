@@ -1,0 +1,19 @@
+@font-face {
+  font-family: 'Sofia Pfeffer Hand';
+  src: url('./fonts/SofiaPfefferHand-Regular.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+:root {
+  --font-family: 'Sofia Pfeffer Hand', cursive;
+  font-family: var(--font-family);
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
