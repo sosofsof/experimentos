@@ -16,6 +16,8 @@
     "noEmit": true
   },
   "include": [
-    "pecas/src/**/*.ts"
+    "pecas/src/**/*.ts",
+    "rolo/**/*.ts",
+    "assets/navigation.ts"
   ]
 }

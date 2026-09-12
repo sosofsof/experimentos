@@ -7,6 +7,8 @@ pecas/generated/
 .env.*
 .dev.vars.*
 dist-worker/
+assets/navigation.js
+rolo/scroll-journey.js
 .DS_Store
 *.log
 *.sqlite*

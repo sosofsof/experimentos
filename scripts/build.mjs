@@ -48,6 +48,7 @@ for (const folder of ['assets', 'pecas', 'cartas', 'flores', 'rolo']) {
 }
 await cp(path.join(root, 'index.html'), path.join(dist, 'index.html'));
 await cp(path.join(root, 'scripts/static-headers'), path.join(dist, '_headers'));
+await import('./build-interactions.mjs');
 // The original Rolo page exceeds the hosting file limit. Extract its embedded
 // images only in the deployment output; its source and behavior stay intact.
 for (const folder of ['rolo', 'flores']) {

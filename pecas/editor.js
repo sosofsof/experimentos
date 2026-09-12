@@ -5,6 +5,7 @@ const catalog=document.getElementById('catalog'),canvas=document.getElementById(
 const ctx=canvas.getContext('2d'),ghost=document.getElementById('ghost'),empty=document.getElementById('empty');
 const download=document.getElementById('download'),sidebar=document.querySelector('aside'),status=document.getElementById('status');
 const selection=document.getElementById('selection');
+const duplicate=document.getElementById('duplicate-handle');
 const placed=[],images=new Map(),masks=new Map(),touchPoints=new Map();let selected=null,drag=null,pinch=null,category='retalho',W=1,H=1,exporting=false;
 
 const backgroundSelect=document.getElementById('background');
@@ -40,6 +41,7 @@ function setRotation(p,rotation){
   keep(p,p.x*W,p.y*H);draw();
 }
 function syncControls(){
+  duplicate.disabled=!selected||exporting||!!drag||!!pinch;
   selection.hidden=!selected||exporting;
   canvas.classList.toggle('has-selection',!!selected);
   canvas.classList.toggle('is-dragging',!!drag||!!pinch);
@@ -50,17 +52,21 @@ function syncControls(){
   selection.style.left=selected.x*W-w/2+'px';selection.style.top=selected.y*H-h/2+'px';
   selection.style.transform=`rotate(${selected.rotation}deg)`;
   const area=workspace.getBoundingClientRect(),art=canvas.getBoundingClientRect(),r=angle(selected);
-  function positionHandle(id,x,y){
+  function positionHandle(id,x,y,rightSpace=0){
     const worldX=selected.x*W+x*Math.cos(r)-y*Math.sin(r);
     const worldY=selected.y*H+x*Math.sin(r)+y*Math.cos(r);
-    const visibleX=clamp(worldX,area.left-art.left+24,area.right-art.left-24);
+    const visibleX=clamp(worldX,area.left-art.left+24,area.right-art.left-24-rightSpace);
     const visibleY=clamp(worldY,Math.max(-34,area.top-art.top+24),H+22);
     const local=localPoint(selected,visibleX,visibleY),handle=document.getElementById(id);
     handle.style.left=local.x+w/2-22+'px';handle.style.top=local.y+h/2-22+'px';
     handle.style.right='auto';handle.style.bottom='auto';
+    return {x:visibleX,y:visibleY};
   }
   positionHandle('resize-handle',w/2,h/2);
-  positionHandle('rotate-handle',0,-h/2-30);
+  const rotatePosition=positionHandle('rotate-handle',0,-h/2-30,52);
+  const duplicatePosition=localPoint(selected,rotatePosition.x+52,rotatePosition.y);
+  positionHandle('duplicate-handle',duplicatePosition.x,duplicatePosition.y);
+  duplicate.style.transform=`rotate(${-selected.rotation}deg)`;
 }
 function localPoint(p,x,y){
   const dx=x-p.x*W,dy=y-p.y*H,r=angle(p);
@@ -179,6 +185,17 @@ document.addEventListener('pointercancel',e=>endPointer(e,true));
 window.addEventListener('blur',cancelGesture);
 function discard(){if(!selected||exporting)return;const label=selected.asset.label;placed.splice(placed.indexOf(selected),1);selected=null;refresh();draw();status.textContent=`${label} devolvida à barra lateral.`;}
 
+function duplicateSelected(){
+  if(!selected||exporting||drag||pinch)return;
+  const copy={...selected},box=bounds(copy),offset=24;
+  const x=copy.x*W,y=copy.y*H;
+  copy.x=clamp(x+(x+offset>W-box.w/2?-offset:offset),box.w/2,W-box.w/2)/W;
+  copy.y=clamp(y+(y+offset>H-box.h/2?-offset:offset),box.h/2,H-box.h/2)/H;
+  placed.push(copy);selected=copy;draw();canvas.focus();
+  status.textContent=`${copy.asset.label} duplicada com o mesmo tamanho e rotação. A cópia está selecionada.`;
+}
+duplicate.addEventListener('click',duplicateSelected);
+
 function startTransform(e,type){
   if(!selected||exporting||drag||pinch||e.button!==0)return;
   e.preventDefault();
@@ -196,6 +213,7 @@ function keyboardTransform(e){
     e.preventDefault();selected=placed[(placed.indexOf(selected)+1)%placed.length]||null;draw();return;
   }
   if(!selected||e.target instanceof HTMLInputElement)return;
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='d'){e.preventDefault();duplicateSelected();return;}
   if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();discard();return;}
   const dirs={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};
   if(dirs[e.key]){

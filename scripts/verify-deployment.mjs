@@ -10,6 +10,8 @@ const pages = [
   ['/pecas/galeria.html', 'pecas/galeria.html'],
   ['/rolo/', 'rolo/index.html'], ['/flores/', 'flores/index.html'], ['/cartas/', 'cartas/index.html'],
   ...['render', 'publication', 'gallery'].map(name => [`/pecas/generated/${name}.js`, `pecas/generated/${name}.js`]),
+  ...['assets/navigation.js', 'assets/navigation.css', 'rolo/scroll-journey.js', 'rolo/scroll-journey.css']
+    .map(file => [`/${file}`, file]),
 ];
 const digest = bytes => createHash('sha256').update(bytes).digest('hex');
 

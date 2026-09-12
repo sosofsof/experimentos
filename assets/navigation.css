@@ -1,0 +1,66 @@
+:root {
+  --site-navigation-space: calc(60px + env(safe-area-inset-top, 0px));
+}
+
+.site-navigation {
+  position: fixed;
+  z-index: 40;
+  top: max(8px, env(safe-area-inset-top));
+  left: max(12px, env(safe-area-inset-left));
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  width: auto;
+}
+
+.site-navigation__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 4px;
+  background: rgb(255 255 255 / 94%);
+  color: #665e58;
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.2;
+  text-align: left;
+  text-decoration: none;
+  white-space: nowrap;
+  touch-action: manipulation;
+}
+
+.site-navigation__link:hover {
+  background: #f4f0e8;
+  color: #3d332a;
+}
+
+.site-navigation__link:focus-visible {
+  outline: 1px dashed currentColor;
+  outline-offset: 2px;
+}
+
+.site-navigation__link svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+}
+
+/* The editor has controls at the top; reserve room instead of covering them. */
+.page-pecas {
+  padding-top: var(--site-navigation-space);
+}
+
+.page-gallery {
+  padding-top: var(--site-navigation-space);
+}
+
+.page-cartas .table {
+  padding-top: max(40px, var(--site-navigation-space));
+}

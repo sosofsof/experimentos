@@ -6,6 +6,8 @@
 #selection button { position: absolute; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid #222; border-radius: 50%; background: #fff; color: #000; pointer-events: auto; touch-action: none; font-size: 24px; }
 #resize-handle { right: -22px; bottom: -22px; cursor: nwse-resize; }
 #rotate-handle { left: calc(50% - 22px); top: -52px; cursor: grab; }
+#selection #duplicate-handle { cursor: pointer; touch-action: manipulation; }
+#duplicate-handle svg { width: 20px; height: 20px; }
 #selection::before { content: ''; position: absolute; left: 50%; top: -10px; height: 10px; border-left: 1px solid #222; }
 #selection button:active { background: #000; color: #fff; cursor: grabbing; }
 #canvas { cursor: default; }
