@@ -1,0 +1,26 @@
+CARTAS DE TARÔ — VERSÃO COM BORDADO ORAÇÃO
+
+ABRIR NO VS CODE
+1. Extraia o ZIP.
+2. No VS Code, use Arquivo > Abrir Pasta e selecione cartas-taro.
+3. Abra index.html no navegador, ou use Live Server se já tiver a extensão.
+Não é necessário instalar Node.js ou executar npm.
+
+INTERAÇÃO
+As 18 cartas começam de costas.
+Clique em uma carta para ver a frente ampliada.
+Clique na carta ampliada ou no indicativo “Clique para revelar uma oração” para ver o bordado oração Aberta.
+Por enquanto, todas as cartas levam ao mesmo bordado.
+Feche pelo ×, tocando fora da imagem ou pressionando Esc.
+
+ARQUIVOS
+index.html: estrutura da página.
+style.css: aparência, disposição e tamanhos.
+cartas.js: correspondência entre versos e frentes, abertura das cartas e bordado.
+assets/frentes: 18 PNGs originais com as margens corrigidas.
+assets/versos: 18 versos em WebP.
+assets/oracoes/aberta.jpg: foto original do bordado oração de teste.
+oracao.js: exibição do bordado com transparência ao redor do tecido, inclusive ao abrir o HTML diretamente.
+
+Mantenha esses arquivos e a pasta assets juntos.
+Esta pasta corresponde à versão mais recente do HTML enviado.
