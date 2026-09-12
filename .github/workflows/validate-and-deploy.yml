@@ -1,0 +1,125 @@
+name: Validar e publicar
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Never interrupt a deployment already in progress.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+env:
+  CI: 'true'
+  WRANGLER_SEND_METRICS: 'false'
+
+jobs:
+  validate:
+    name: Validar alteração
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Obter código
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Preparar Node.js
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - name: Bloquear arquivos privados e links simbólicos
+        run: npm run check:safety
+      - name: Preparar scanner de segredos verificado
+        shell: bash
+        run: |
+          set -euo pipefail
+          scanner_dir="$(mktemp -d "${RUNNER_TEMP}/gitleaks.XXXXXX")"
+          curl --fail --silent --show-error --location --retry 3 \
+            https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz \
+            --output "${scanner_dir}/gitleaks.tar.gz"
+          echo "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  ${scanner_dir}/gitleaks.tar.gz" | sha256sum --check --status
+          tar -xzf "${scanner_dir}/gitleaks.tar.gz" -C "${scanner_dir}" gitleaks
+          echo "${scanner_dir}" >> "$GITHUB_PATH"
+      - name: Procurar segredos sem expor valores
+        run: npm run check:secrets
+      - name: Instalar versões do lockfile sem scripts de instalação
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verificar dependências vulneráveis
+        run: npm audit --audit-level=high
+      - name: Verificar sintaxe, tipos, build e empacotamento
+        run: npm run check
+      - name: Confirmar que o build preservou os arquivos fonte
+        run: git diff --exit-code --quiet
+
+  deploy:
+    name: Publicar na Cloudflare
+    needs: validate
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment:
+      name: production
+      url: https://experimentos-pecas-livres.experimentos.workers.dev
+    steps:
+      - name: Obter o mesmo código validado
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Preparar Node.js
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - name: Instalar versões do lockfile sem scripts de instalação
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Reconstruir e conferir antes de acessar credenciais
+        run: npm run check
+      - name: Impedir publicação de execução antiga
+        id: latest
+        shell: bash
+        run: |
+          set -euo pipefail
+          latest_sha="$(git ls-remote origin refs/heads/main | cut -f1)"
+          if [ -z "$latest_sha" ]; then
+            echo '::error::Não foi possível confirmar a versão atual da main.'
+            exit 1
+          fi
+          if [ "$latest_sha" = "$GITHUB_SHA" ]; then
+            echo 'publish=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'publish=false' >> "$GITHUB_OUTPUT"
+            echo 'Publicação ignorada: existe uma atualização mais recente na main.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Publicar código e arquivos estáticos
+        if: steps.latest.outputs.publish == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo '::error::Configure os dois secrets no ambiente production. Consulte docs/DEPLOY.md. Não cole os valores no chat.'
+            exit 1
+          fi
+          ./node_modules/.bin/wrangler deploy --keep-vars
+      - name: Confirmar páginas, versão dos arquivos e saúde da API
+        if: steps.latest.outputs.publish == 'true'
+        run: npm run deploy:verify
+      - name: Registrar resultado público
+        if: success() && steps.latest.outputs.publish == 'true'
+        shell: bash
+        run: |
+          echo "Publicação confirmada para o commit ${GITHUB_SHA}." >> "$GITHUB_STEP_SUMMARY"
+          echo 'Site: https://experimentos-pecas-livres.experimentos.workers.dev' >> "$GITHUB_STEP_SUMMARY"
+      - name: Orientar em caso de falha
+        if: failure()
+        run: echo 'Publicação não confirmada. O envio pode ter ocorrido; confira o estado antes de repetir. Nenhuma migração, exclusão ou reversão é executada por este workflow.' >> "$GITHUB_STEP_SUMMARY"

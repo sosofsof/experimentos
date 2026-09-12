@@ -1,0 +1,10 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "experimentos-pecas-livres",
+  "main": "worker/worker.ts",
+  "compatibility_date": "2026-09-12",
+  "workers_dev": true,
+  "assets": { "directory": "./dist", "binding": "ASSETS", "run_worker_first": ["/api/*"], "not_found_handling": "404-page" },
+  "d1_databases": [{ "binding": "DB", "database_name": "pecas-livres", "database_id": "8808e457-d037-4f13-ac09-c4bd6668b56a", "migrations_dir": "worker/migrations" }],
+  "ratelimits": [{ "name": "PUBLICATION_LIMIT", "namespace_id": "1001", "simple": { "limit": 5, "period": 60 } }]
+}

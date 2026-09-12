@@ -67,27 +67,9 @@ function localPoint(p,x,y){
   return {x:dx*Math.cos(r)+dy*Math.sin(r),y:-dx*Math.sin(r)+dy*Math.cos(r)};
 }
 function snapshot(p){return {x:p.x,y:p.y,relative:p.relative,rotation:p.rotation};}
-function render(target,width,height){
-  target.fillStyle=background==='preto'?'#000':'#fff';target.fillRect(0,0,width,height);
-  const bg=backgroundImages.get(background);
-  if(bg&&bg.complete&&bg.naturalWidth){
-    const factor=Math.max(width/bg.naturalWidth,height/bg.naturalHeight),bw=bg.naturalWidth*factor,bh=bg.naturalHeight*factor;
-    target.drawImage(bg,(width-bw)/2,(height-bh)/2,bw,bh);
-  }
-  for(const p of placed){
-    const {w,h}=dimensions(p),im=images.get(p.asset.id);
-    if(!im.complete||!im.naturalWidth)continue;
-    target.save();target.scale(width/W,height/H);target.translate(p.x*W,p.y*H);target.rotate(angle(p));
-    target.drawImage(im,-w/2,-h/2,w,h);target.restore();
-  }
-  frame(target,width,height);
-}
-function frame(target,width,height){
- target.save();target.scale(width/1000,height/(2000/3));target.strokeStyle='#000';target.lineCap='round';target.lineJoin='round';
- function edge(x1,y1,x2,y2,seed){const dx=x2-x1,dy=y2-y1,length=Math.hypot(dx,dy),nx=-dy/length,ny=dx/length,steps=Math.ceil(length/4);let previous=null;
- for(let i=0;i<=steps;i++){const t=i/steps,d=t*length;const wobble=1.05*Math.sin(d*.025+seed)+.4*Math.sin(d*.071+seed*2)+.12*Math.sin(d*.14+seed);const x=x1+dx*t+nx*wobble,y=y1+dy*t+ny*wobble;if(previous){target.lineWidth=1.35+.22*Math.sin(d*.019+seed)+.08*Math.sin(d*.083);target.beginPath();target.moveTo(previous[0],previous[1]);target.lineTo(x,y);target.stroke();}previous=[x,y];}}
- edge(5,7,995,7,1);edge(993,4,993,661,3);edge(997,659,4,659,5);edge(7,663,7,3,7);target.restore();
-}
+function recipe(){return {version:1,background,pieces:placed.map(p=>({id:p.asset.id,x:p.x,y:p.y,relative:p.relative,rotation:p.rotation||0}))};}
+window.artworkEditor={snapshot:recipe};
+function render(target,width,height){window.ArtworkRendering.renderRecipe(target,width,height,recipe(),images,backgroundImages);}
 function draw(){ctx.setTransform(canvas.width/W,0,0,canvas.height/H,0,0);render(ctx,W,H);empty.hidden=placed.length>0;empty.style.color=background==='preto'?'#fff':'#000';backgroundSelect.disabled=exporting;download.disabled=!placed.length||exporting;document.getElementById('publish').disabled=!placed.length||exporting;syncControls();}
 function resize(){
   if(drag||pinch)cancelGesture();
@@ -229,7 +211,6 @@ canvas.addEventListener('keydown',keyboardTransform);
 selection.addEventListener('keydown',keyboardTransform);
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{category=b.dataset.kind;document.querySelectorAll('.tab').forEach(t=>{t.classList.toggle('active',t===b);t.setAttribute('aria-pressed',String(t===b));});catalog.scrollTop=0;refresh();}));
 download.addEventListener('click',async()=>{if(exporting||!placed.length)return;exporting=true;download.textContent='Preparando…';draw();try{await Promise.all([...placed.map(p=>images.get(p.asset.id).decode()),...(backgroundImages.has(background)?[backgroundImages.get(background).decode()]:[])]);const out=document.createElement('canvas'),factor=3000/Math.max(W,H);out.width=Math.round(W*factor);out.height=Math.round(H*factor);render(out.getContext('2d'),out.width,out.height);const blob=await new Promise((resolve,reject)=>out.toBlob(b=>b?resolve(b):reject(new Error('JPG indisponível')),'image/jpeg',.95));const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='minha-obra.jpg';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);status.textContent='JPG preparado para download.';}catch(error){status.textContent='Não foi possível baixar. Tente novamente.';alert('Não foi possível baixar o JPG. Tente novamente.');}finally{exporting=false;download.textContent='salvar JPG';draw();}});
-document.getElementById('publish').addEventListener('click',()=>document.getElementById('publish-notice').showModal());
 new ResizeObserver(resize).observe(workspace);refresh();resize();
 const mc=document.modelContext;if(mc?.registerTool){try{Promise.resolve(mc.registerTool({name:'read_composition',description:'Read the pieces placed in the artwork.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:true},execute:()=>({pieces:placed.map(p=>({id:p.asset.id,x:p.x,y:p.y,relative:p.relative,rotation:p.rotation})),width:W,height:H,background})})).catch(()=>{});}catch(_){}}
 })();
