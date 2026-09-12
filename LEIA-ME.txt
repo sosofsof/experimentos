@@ -1,8 +1,12 @@
 SITE — QUATRO EXPERIMENTOS
 
+Para pedir mudanças pelo Work e acompanhar a publicação, leia README.md.
+As instruções de segurança para agentes estão em AGENTS.md.
+A configuração inicial do deploy automático está em docs/DEPLOY.md.
+
 Extraia o ZIP inteiro e abra index.html na pasta principal. Clique no nome de um experimento. Use Voltar do navegador para retornar ao menu.
 
 NO VS CODE
-Abra a pasta site-experimentos. Você pode usar a extensão Live Server e abrir o index.html principal com Open with Live Server. Não precisa instalar pacotes ou usar npm.
+Abra a pasta do projeto. O Live Server permite abrir os experimentos estáticos, mas publicação e galeria precisam do servidor descrito em README.md, com Node.js e npm.
 
 Mantenha as subpastas junto do index.html. Elas contêm os quatro experimentos e suas imagens.

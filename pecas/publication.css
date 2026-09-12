@@ -1,0 +1,25 @@
+.gallery-entry { padding: 12px 24px 0; text-align: right; flex-shrink: 0; }
+.gallery-entry a { color: inherit; font-size: 14px; text-underline-offset: 5px; }
+.publication-dialog { box-sizing: border-box; width: min(520px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); padding: 24px; border: 1px solid #000; color: #000; background: #fff; line-height: 1.5; overflow-y: auto; }
+.publication-dialog::backdrop { background: rgb(255 255 255 / 80%); }
+.publication-dialog *, .publication-dialog *::before, .publication-dialog *::after { box-sizing: border-box; }
+.publication-dialog h1, .publication-dialog h2 { margin: 0; font-size: 24px; font-weight: 400; }
+.dialog-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+.dialog-top button { background: #fff; border: 0; text-decoration: underline; text-underline-offset: 4px; min-height: 44px; cursor: pointer; }
+.publication-dialog fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
+.publication-dialog canvas { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; margin-bottom: 20px; }
+.publication-dialog label:not(.consent) { display: block; margin: 16px 0 6px; }
+.publication-dialog label span, .small-note { font-size: 14px; }
+.publication-dialog input:not([type="checkbox"]) { width: 100%; min-width: 0; padding: 10px; border: 1px solid #000; border-radius: 0; color: #000; background: #fff; font-size: 16px; }
+.consent { display: flex; align-items: flex-start; gap: 8px; margin-top: 20px; cursor: pointer; }
+.consent input { flex-shrink: 0; width: 20px; height: 20px; accent-color: #000; }
+.outlined { display: inline-block; border: 1px solid #000; border-radius: 3px 6px 4px 5px; background: #fff; color: #000; padding: 10px 16px; font: inherit; min-height: 44px; cursor: pointer; text-decoration: none; }
+.outlined:hover:not(:disabled) { color: #fff; background: #000; }
+.outlined:disabled { opacity: .55; cursor: wait; }
+.dialog-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; margin: 16px 0; }
+.dialog-actions a { color: inherit; text-underline-offset: 4px; }
+.publication-dialog :focus-visible { outline: 2px dashed #000; outline-offset: 3px; }
+#publish-feedback:empty, #share-feedback:empty { display: none; }
+#publish-feedback { margin: 16px 0 0; }
+[hidden] { display: none !important; }
+@media (max-width: 650px) { .gallery-entry { padding: 12px 14px 0; } .publication-dialog { padding: 18px; } }

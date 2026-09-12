@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="Peças livres: composições feitas com retalhos, cacos e letras. Uma galeria coletiva.">
+  <title>Galeria · Peças livres</title>
+  <link rel="stylesheet" href="../assets/typography.css">
+  <link rel="stylesheet" href="./publication.css">
+  <link rel="stylesheet" href="./gallery.css">
+</head>
+<body>
+  <header class="gallery-header"><a href="./galeria.html">Peças livres</a><a href="./index.html" class="outlined">criar uma peça</a></header>
+  <main>
+    <section id="gallery-intro"><h1>Uma peça de cada um.</h1></section>
+    <p id="gallery-status" role="status" aria-live="polite">Carregando as peças…</p>
+    <button id="retry-gallery" class="outlined" hidden>tentar novamente</button>
+    <div id="gallery-grid" class="gallery-grid" aria-label="Peças publicadas"></div>
+    <button id="load-more" class="outlined load-more" hidden>ver mais peças</button>
+    <article id="artwork-detail" hidden>
+      <a href="./galeria.html" class="back-link">← voltar à galeria</a>
+      <canvas id="detail-canvas" width="1500" height="1000" aria-label="Peça publicada"></canvas>
+      <h1 class="sr-only">Peça publicada</h1><p id="detail-date" class="small-note"></p>
+      <div class="detail-actions"><button id="share-piece" class="outlined">copiar link público</button><button id="download-piece" class="outlined">salvar JPG</button><button id="remove-piece" class="outlined" hidden>retirar da galeria</button></div>
+      <p id="detail-feedback" role="status"></p>
+      <label id="share-fallback" hidden>Link público<input id="share-url" readonly type="url"></label>
+      <p id="owner-hint" class="small-note" hidden>Você tem o acesso privado desta peça. O link público não permite excluí-la.</p>
+    </article>
+  </main>
+  <dialog id="delete-dialog" class="publication-dialog" aria-labelledby="delete-heading">
+    <h2 id="delete-heading">Retirar sua peça da galeria?</h2>
+    <p>Ela deixará de aparecer na galeria e seu link público não exibirá mais a composição. Salve o JPG antes, se quiser guardar uma cópia.</p>
+    <div class="dialog-actions"><button id="cancel-delete" class="outlined">manter a peça</button><button id="confirm-delete" class="outlined">retirar peça</button></div>
+    <p id="delete-feedback" role="status"></p>
+  </dialog>
+  <script src="./assets/v1/catalog.js"></script>
+  <script src="./generated/gallery.js"></script>
+</body>
+</html>
