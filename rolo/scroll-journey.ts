@@ -40,7 +40,7 @@ export function initializeScrollJourney({ journey, track, onComplete }: JourneyE
     if (hint) {
       const message = atEnd
         ? 'Continue rolando ↓'
-        : 'Role para baixo para percorrer os bordados →';
+        : 'Deslize para o lado ou role para baixo →';
       if (hint.textContent !== message) hint.textContent = message;
     }
 
@@ -109,11 +109,11 @@ export function initializeScrollJourney({ journey, track, onComplete }: JourneyE
   }
 
   function onPointerDown(event: PointerEvent) {
-    if (event.pointerType !== 'mouse' || event.button !== 0 || journey.scrollTop > distance) return;
+    if (!event.isPrimary || event.button !== 0 || journey.scrollTop > distance) return;
     if (event.target instanceof Element && event.target.closest('button, a')) return;
     drag = { pointerId: event.pointerId, x: event.clientX, scrollTop: journey.scrollTop };
     track.setPointerCapture(event.pointerId);
-    track.focus({ preventScroll: true });
+    if (event.pointerType === 'mouse') track.focus({ preventScroll: true });
   }
 
   function onPointerMove(event: PointerEvent) {

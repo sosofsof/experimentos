@@ -28,7 +28,7 @@ export function validatePublication(value: unknown) {
     pieces: recipe.pieces.map(value => {
       const piece = object(value);
       if (typeof piece.id !== 'string' || !assetIds.has(piece.id)) throw new RequestError('Elemento fora do catálogo.');
-      return { id: piece.id, x: number(piece.x, 0, 1), y: number(piece.y, 0, 1), relative: number(piece.relative, .001, .9), rotation: number(piece.rotation, -180, 180) };
+      return { id: piece.id, x: number(piece.x, -1, 2), y: number(piece.y, -1, 2), relative: number(piece.relative, .001, .9), rotation: number(piece.rotation, -180, 180) };
     }),
   };
   return { id: data.id, deleteToken: data.deleteToken, recipe: normalized };
