@@ -19,6 +19,7 @@ export function initializeScrollJourney({ journey, track, onComplete }: JourneyE
   const sequence = journey.querySelector<HTMLElement>('.horizontal-sequence');
   const experience = journey.querySelector<HTMLElement>('.experience');
   const stage = track.querySelector<HTMLElement>('.stage');
+  const cordArtwork = track.querySelector<HTMLElement>('.embroidery[data-order="3"]');
   const hint = journey.querySelector<HTMLElement>('.journey-hint');
   if (!sequence || !experience || !stage || !hint) return;
 
@@ -55,10 +56,20 @@ export function initializeScrollJourney({ journey, track, onComplete }: JourneyE
   }
 
   function measure() {
-    if (!sequence || !experience) return;
+    if (!sequence || !experience || !stage) return;
     const previousDistance = distance;
     const previousTop = lastScrollTop;
-    const nextDistance = Math.max(0, track.scrollWidth - track.clientWidth);
+    // Finish with the existing connection point centered, without moving it on the cloth.
+    const artworkBounds = cordArtwork?.getBoundingClientRect();
+    const connectionX = artworkBounds
+      ? artworkBounds.left - track.getBoundingClientRect().left + track.scrollLeft + artworkBounds.width / 2
+      : null;
+    if (connectionX !== null) {
+      stage.style.minWidth = `${Math.max(track.clientWidth, Math.ceil(connectionX + track.clientWidth / 2))}px`;
+    }
+    const nextDistance = connectionX !== null
+      ? Math.max(0, connectionX - track.clientWidth / 2)
+      : Math.max(0, track.scrollWidth - track.clientWidth);
     const height = experience.clientHeight + nextDistance;
     distance = nextDistance;
     sequence.style.height = `${height}px`;
