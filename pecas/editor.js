@@ -24,11 +24,10 @@ function bounds(p){
   return {w:Math.abs(w*Math.cos(r))+Math.abs(h*Math.sin(r)),h:Math.abs(w*Math.sin(r))+Math.abs(h*Math.cos(r))};
 }
 function keep(p,x,y){
-  let box=bounds(p);
-  const fit=Math.min(1,W/box.w,H/box.h);
-  if(fit<1){p.relative*=fit;box=bounds(p);}
-  p.x=clamp(x,box.w/2,W-box.w/2)/W;
-  p.y=clamp(y,box.h/2,H-box.h/2)/H;
+  // Keep a small reachable overlap; the canvas clips everything outside it.
+  const box=bounds(p),overlap=Math.min(8,box.w/2,box.h/2);
+  p.x=clamp(x,-box.w/2+overlap,W+box.w/2-overlap)/W;
+  p.y=clamp(y,-box.h/2+overlap,H+box.h/2-overlap)/H;
 }
 function setScale(p,relative){
   if(!p||exporting)return;
@@ -187,10 +186,8 @@ function discard(){if(!selected||exporting)return;const label=selected.asset.lab
 
 function duplicateSelected(){
   if(!selected||exporting||drag||pinch)return;
-  const copy={...selected},box=bounds(copy),offset=24;
-  const x=copy.x*W,y=copy.y*H;
-  copy.x=clamp(x+(x+offset>W-box.w/2?-offset:offset),box.w/2,W-box.w/2)/W;
-  copy.y=clamp(y+(y+offset>H-box.h/2?-offset:offset),box.h/2,H-box.h/2)/H;
+  const copy={...selected},offset=24;
+  keep(copy,copy.x*W+(copy.x>.5?-offset:offset),copy.y*H+(copy.y>.5?-offset:offset));
   placed.push(copy);selected=copy;draw();canvas.focus();
   status.textContent=`${copy.asset.label} duplicada com o mesmo tamanho e rotação. A cópia está selecionada.`;
 }

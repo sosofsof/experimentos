@@ -62,3 +62,35 @@
   left: calc(50% + 24px);
   text-align: left;
 }
+
+/* Anchor both inner fabric edges to the measured cord, on every viewport. */
+.journey .vertical-installation {
+  --work-gap: clamp(12px, 2vw, 28px);
+  --work-margin: 12px;
+}
+.journey .vertical-installation .scene-left,
+.journey .vertical-installation .scene-right {
+  height: 100svh !important;
+  min-height: 0 !important;
+}
+.journey .vertical-installation .vertical-embroidery {
+  top: 50% !important;
+  width: auto !important;
+  height: auto !important;
+  max-height: calc(100svh - 24px) !important;
+  object-fit: contain !important;
+}
+.journey .vertical-installation .scene-left .vertical-embroidery {
+  left: auto !important;
+  right: calc(100% - var(--branch-x, 50%) + var(--work-gap)) !important;
+  width: calc(var(--branch-x, 50%) - var(--work-gap) - var(--work-margin)) !important;
+  max-width: calc(var(--branch-x, 50%) - var(--work-gap) - var(--work-margin)) !important;
+  object-position: right center !important;
+}
+.journey .vertical-installation .scene-right .vertical-embroidery {
+  right: auto !important;
+  left: calc(var(--branch-x, 50%) + var(--work-gap)) !important;
+  width: calc(100% - var(--branch-x, 50%) - var(--work-gap) - var(--work-margin)) !important;
+  max-width: calc(100% - var(--branch-x, 50%) - var(--work-gap) - var(--work-margin)) !important;
+  object-position: left center !important;
+}
