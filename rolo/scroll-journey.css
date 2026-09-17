@@ -115,3 +115,21 @@
   }
   .embroidery-caption { font-size: 14px; }
 }
+
+/* Follow the closed roll using its own sizing variables. */
+.stage::after {
+  content: "⟵ clique para abrir";
+  position: absolute;
+  left: calc(var(--cloth-left) + var(--cloth-height) * .13271 + 18px);
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: calc(100vw - var(--cloth-left) - var(--cloth-height) * .13271 - 34px);
+  font-size: clamp(18px, 2vw, 26px);
+  line-height: 1.3;
+  color: #3d332a;
+  pointer-events: none;
+}
+
+.is-unlocked .stage::after {
+  display: none;
+}
