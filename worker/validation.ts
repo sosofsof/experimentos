@@ -1,4 +1,4 @@
-import catalog from '../pecas/assets/v1/catalog.json';
+import catalog from '../pecas/assets/v2/catalog.json';
 import type { Recipe } from '../pecas/src/artwork.types';
 
 const assetIds = new Set(catalog.assets.map(asset => asset.id));
