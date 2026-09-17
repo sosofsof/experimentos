@@ -33,7 +33,7 @@
 
 .journey .horizontal-track,
 .journey .horizontal-track * {
-  touch-action: pan-y pinch-zoom !important;
+  touch-action: pinch-zoom !important;
 }
 
 .journey:not(.horizontal-complete) .vertical-installation {
@@ -46,21 +46,33 @@
 }
 
 .journey-hint {
+  display: none !important;
+}
+
+.embroidery-caption-layer {
   position: absolute;
-  z-index: 6;
-  bottom: max(24px, env(safe-area-inset-bottom));
-  left: 24px;
-  right: 24px;
-  margin: 0;
-  text-align: center;
-  font-size: clamp(16px, 1.3vw, 20px);
-  color: #6a5747;
+  inset: 0;
+  z-index: 8;
   pointer-events: none;
 }
 
-.horizontal-complete .journey-hint {
-  left: calc(50% + 24px);
-  text-align: left;
+.embroidery-caption {
+  position: absolute;
+  margin: 0;
+  transform: translateX(-50%);
+  width: clamp(180px, 23vw, 300px);
+  color: #3d332a;
+  font-size: clamp(14px, 1.25vw, 19px);
+  line-height: 1.35;
+  text-align: center;
+  text-wrap: pretty;
+}
+
+@media (max-width: 700px) {
+  .embroidery-caption {
+    width: min(220px, 64vw);
+    font-size: 14px;
+  }
 }
 
 /* Anchor both inner fabric edges to the measured cord, on every viewport. */
@@ -93,4 +105,13 @@
   width: calc(100% - var(--branch-x, 50%) - var(--work-gap) - var(--work-margin)) !important;
   max-width: calc(100% - var(--branch-x, 50%) - var(--work-gap) - var(--work-margin)) !important;
   object-position: left center !important;
+}
+
+/* Leave room for the longest caption on short landscape screens. */
+@media (max-height: 600px) {
+  .journey-started .cloth,
+  .journey-started .roll {
+    top: calc(50% - 40px);
+  }
+  .embroidery-caption { font-size: 14px; }
 }

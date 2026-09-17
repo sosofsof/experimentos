@@ -9,10 +9,22 @@ type JourneyElements = {
 type DragPosition = {
   pointerId: number;
   x: number;
+  y: number;
+  axis: 'x' | 'y' | null;
   scrollTop: number;
 };
 
 const END_TOLERANCE = 1;
+
+const EMBROIDERY_CAPTIONS = new Map([
+  ['2', 'Tinha alguma coisa dentro de mim.'],
+  ['6', 'Eu fantasiava sobre enfiar minha mão dentro do meu próprio corpo e arrancar o parasita.'],
+  ['5', 'Ou o que quer que fosse que estava crescendo na minha barriga.'],
+  ['4', 'Eu sentia uma calma imensa quando eu acordava e nada era real.'],
+  ['7', 'Então eu levantava e os pesadelos ainda estavam na minha barriga.'],
+  ['8', 'Dormindo enquanto eu ando, andando enquanto eu durmo. A gente vive junto assim.'],
+  ['1', 'Mas eu ainda torço para que eu esteja errada.'],
+]);
 
 /** One native vertical scroll position drives both parts of the exhibition. */
 export function initializeScrollJourney({ journey, track, onComplete }: JourneyElements) {
@@ -20,8 +32,8 @@ export function initializeScrollJourney({ journey, track, onComplete }: JourneyE
   const experience = journey.querySelector<HTMLElement>('.experience');
   const stage = track.querySelector<HTMLElement>('.stage');
   const cordArtwork = track.querySelector<HTMLElement>('.embroidery[data-order="3"]');
-  const hint = journey.querySelector<HTMLElement>('.journey-hint');
-  if (!sequence || !experience || !stage || !hint) return;
+  if (!sequence || !experience || !stage) return;
+  const captionStage = stage;
 
   let distance = 0;
   let measured = false;
@@ -30,6 +42,29 @@ export function initializeScrollJourney({ journey, track, onComplete }: JourneyE
   let drag: DragPosition | null = null;
   let lastScrollTop = journey.scrollTop;
 
+  function renderCaptions() {
+    const cloth = captionStage.querySelector<HTMLElement>('.cloth');
+    const artworks = captionStage.querySelectorAll<HTMLElement>('.embroidery[data-order]');
+    if (!cloth || !artworks.length) return;
+    captionStage.querySelector('.embroidery-caption-layer')?.remove();
+    const layer = document.createElement('div');
+    layer.className = 'embroidery-caption-layer';
+    const stageBounds = captionStage.getBoundingClientRect();
+    const clothBounds = cloth.getBoundingClientRect();
+    for (const artwork of artworks) {
+      const text = EMBROIDERY_CAPTIONS.get(artwork.dataset.order || '');
+      if (!text) continue;
+      const bounds = artwork.getBoundingClientRect();
+      const caption = document.createElement('p');
+      caption.className = 'embroidery-caption';
+      caption.textContent = text;
+      caption.style.left = `${bounds.left - stageBounds.left + bounds.width / 2}px`;
+      caption.style.top = `${clothBounds.bottom - stageBounds.top + 18}px`;
+      layer.append(caption);
+    }
+    captionStage.append(layer);
+  }
+
   function update() {
     frame = 0;
     lastScrollTop = journey.scrollTop;
@@ -37,13 +72,6 @@ export function initializeScrollJourney({ journey, track, onComplete }: JourneyE
     track.scrollLeft = position;
     const atEnd = position >= distance - END_TOLERANCE;
     journey.classList.toggle('horizontal-complete', atEnd);
-
-    if (hint) {
-      const message = atEnd
-        ? 'Continue rolando ↓'
-        : 'Deslize para o lado ou role para baixo →';
-      if (hint.textContent !== message) hint.textContent = message;
-    }
 
     if (atEnd && !completed) {
       completed = true;
@@ -73,6 +101,7 @@ export function initializeScrollJourney({ journey, track, onComplete }: JourneyE
     const height = experience.clientHeight + nextDistance;
     distance = nextDistance;
     sequence.style.height = `${height}px`;
+    renderCaptions();
 
     // Resizing preserves the current artwork, or the offset into the vertical section.
     if (measured && previousDistance > 0 && previousDistance !== distance) {
@@ -120,16 +149,29 @@ export function initializeScrollJourney({ journey, track, onComplete }: JourneyE
   }
 
   function onPointerDown(event: PointerEvent) {
-    if (!event.isPrimary || event.button !== 0 || journey.scrollTop > distance) return;
+    if (!event.isPrimary || event.button !== 0) {
+      drag = null;
+      return;
+    }
     if (event.target instanceof Element && event.target.closest('button, a')) return;
-    drag = { pointerId: event.pointerId, x: event.clientX, scrollTop: journey.scrollTop };
+    drag = { pointerId: event.pointerId, x: event.clientX, y: event.clientY, axis: journey.scrollTop > distance + END_TOLERANCE ? 'y' : null, scrollTop: journey.scrollTop };
     track.setPointerCapture(event.pointerId);
+    if (event.pointerType === 'mouse' && !drag.axis) drag.axis = 'x';
     if (event.pointerType === 'mouse') track.focus({ preventScroll: true });
   }
 
   function onPointerMove(event: PointerEvent) {
     if (!drag || drag.pointerId !== event.pointerId) return;
-    journey.scrollTop = Math.min(distance, Math.max(0, drag.scrollTop + drag.x - event.clientX));
+    const dx = drag.x - event.clientX;
+    const dy = drag.y - event.clientY;
+    if (!drag.axis) {
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < 8) return;
+      drag.axis = Math.abs(dx) >= Math.abs(dy) ? 'x' : 'y';
+    }
+    // Lock the gesture once, so diagonal swipes do not fight native scrolling.
+    journey.scrollTop = Math.max(0, drag.axis === 'x'
+      ? Math.min(distance, drag.scrollTop + dx)
+      : drag.scrollTop + dy);
     update();
   }
 
@@ -153,12 +195,14 @@ export function initializeScrollJourney({ journey, track, onComplete }: JourneyE
   track.addEventListener('lostpointercapture', endDrag);
 
   measure();
+  track.removeAttribute('aria-describedby');
   const cleanupCord = initializeCordReveal({ journey, track, sequence, experience });
   track.focus({ preventScroll: true });
 
   return () => {
     observer.disconnect();
     cleanupCord?.();
+    captionStage.querySelector('.embroidery-caption-layer')?.remove();
     cancelAnimationFrame(frame);
     journey.removeEventListener('scroll', scheduleUpdate);
     journey.removeEventListener('keydown', onKeyDown);
