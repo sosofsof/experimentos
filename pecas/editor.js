@@ -14,7 +14,14 @@ for(const [id,src] of Object.entries(window.ARTWORK_BACKGROUNDS)){const im=new I
 backgroundSelect.addEventListener('change',()=>{background=backgroundSelect.value;draw();});
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 const MIN_SCALE=.035,MAX_SCALE=.9;
-for(const a of assets){const im=new Image();im.src=a.src;images.set(a.id,im);masks.set(a.id,Uint8Array.from(atob(a.mask),c=>c.charCodeAt(0)));im.onload=()=>draw();}
+for(const a of assets)masks.set(a.id,Uint8Array.from(atob(a.mask),c=>c.charCodeAt(0)));
+function ensureImage(a){
+  if(images.has(a.id))return;
+  const im=new Image();images.set(a.id,im);
+  im.onload=()=>draw();
+  im.onerror=()=>{images.delete(a.id);status.textContent='Não foi possível carregar esta peça. Tente adicioná-la novamente.';};
+  im.src=a.src;
+}
 function size(a){const long=Math.max(a.width,a.height);const old=a.kind==='caco'?70+Math.sqrt(long)*2.6:48+Math.sqrt(long)*3.2;const vw=window.innerWidth,margin=vw<600?12:24,cols=Math.max(2,Math.floor((vw-margin*2)/(vw<600?106:142))),cell=(vw-margin*2)/cols;const length=Math.min(.9*Math.min(old*Math.min(1,cell/155),cell-24,cell*1.02-24),W*.8,H*.8);return {w:length*a.width/long,h:length*a.height/long};}
 function dimensions(p){const long=p.relative*Math.min(W,H);return {w:long*p.asset.width/Math.max(p.asset.width,p.asset.height),h:long*p.asset.height/Math.max(p.asset.width,p.asset.height)};}
 function angle(p){return (p.rotation||0)*Math.PI/180;}
@@ -84,8 +91,8 @@ function resize(){
   const dpr=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);
   placed.forEach(p=>keep(p,p.x*W,p.y*H));draw();
 }
-function refresh(){catalog.replaceChildren();for(const a of assets.filter(a=>a.kind===category)){const b=document.createElement('button');b.type='button';b.className='asset';b.setAttribute('aria-label',`${a.label} — toque ou arraste para adicionar quantas vezes quiser`);const im=document.createElement('img');im.src=a.src;im.alt='';im.draggable=false;b.append(im);b.addEventListener('pointerdown',e=>startCatalog(e,a,b));b.addEventListener('click',e=>{if(e.detail===0)add(a,W/2,H/2);});catalog.append(b);}}
-function add(a,x,y){if(exporting)return;const s=size(a);const p={asset:a,x:.5,y:.5,rotation:0,relative:clamp(Math.max(s.w,s.h)/Math.min(W,H),MIN_SCALE,MAX_SCALE)};placed.push(p);selected=p;keep(p,x,y);draw();status.textContent=`${a.label} adicionada. Você pode usar este elemento novamente pela barra lateral.`;}
+function refresh(){catalog.replaceChildren();for(const a of assets.filter(a=>a.kind===category)){const b=document.createElement('button');b.type='button';b.className='asset';b.setAttribute('aria-label',`${a.label} — toque ou arraste para adicionar quantas vezes quiser`);const im=document.createElement('img');im.loading='lazy';im.decoding='async';im.src=a.src;im.alt='';im.draggable=false;b.append(im);b.addEventListener('pointerdown',e=>startCatalog(e,a,b));b.addEventListener('click',e=>{if(e.detail===0)add(a,W/2,H/2);});catalog.append(b);}}
+function add(a,x,y){if(exporting)return;ensureImage(a);const s=size(a);const p={asset:a,x:.5,y:.5,rotation:0,relative:clamp(Math.max(s.w,s.h)/Math.min(W,H),MIN_SCALE,MAX_SCALE)};placed.push(p);selected=p;keep(p,x,y);draw();status.textContent=`${a.label} adicionada. Você pode usar este elemento novamente pela barra lateral.`;}
 function point(e){const r=canvas.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top};}
 function hit(p,x,y){
   const a=p.asset,{w,h}=dimensions(p),q=localPoint(p,x,y);

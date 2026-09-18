@@ -94,4 +94,4 @@ async function checkSizes(dir) {
   }
 }
 await checkSizes(dist);
-console.log('Build concluído. Catálogo v1 preservado; todos os arquivos abaixo de 25 MiB.');
+console.log('Build concluído. Todos os arquivos abaixo de 25 MiB.');
