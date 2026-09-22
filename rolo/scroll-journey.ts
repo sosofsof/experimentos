@@ -18,13 +18,96 @@ const END_TOLERANCE = 1;
 
 const EMBROIDERY_CAPTIONS = new Map([
   ['2', 'Tinha alguma coisa dentro de mim.'],
-  ['6', 'Eu fantasiava sobre enfiar minha mão dentro do meu próprio corpo e arrancar o parasita.'],
-  ['5', 'Ou o que quer que fosse que estava crescendo na minha barriga.'],
-  ['4', 'Eu sentia uma calma imensa quando eu acordava e nada era real.'],
-  ['7', 'Então eu levantava e os pesadelos ainda estavam na minha barriga.'],
-  ['8', 'Dormindo enquanto eu ando, andando enquanto eu durmo. A gente vive junto assim.'],
-  ['1', 'Mas eu ainda torço para que eu esteja errada.'],
+  ['6', 'Eu sonhava acordada em arrancar aquilo com minhas mãos.'],
+  ['5', 'Eu respirava com a ideia do sangue caindo no chão,'],
+  ['4', 'de não ter mais nada crescendo na minha barriga.'],
+  ['7', 'De noite, eram sempre pesadelos — eu via, escutava, sentia.'],
+  ['8', 'De manhã, os pesadelos voltavam para a minha barriga, silenciosos e escondidos.'],
+  ['1', 'Mas eu ainda os sentia, apertando meu estômago, meu coração, meu intestino, cada cantinho.'],
 ]);
+
+const VERTICAL_TEXT = {
+  first: [
+    'Então eu tentei trazê-los à vida. Eu tento. Talvez, se eu criar meus próprios pesadelos de dia, os que moram na minha barriga precisem descansar de noite.',
+    'Talvez, se eu criar minhas próprias orações, eles vão embora para sempre.',
+    'Mas não há muito que eu possa fazer pelos pesadelos que vivem no mundo.',
+    'Então eu crio também os pesadelos que eu queria que fossem reais.',
+  ],
+  second: [
+    'Talvez meu corpo precise ser meu antes que eu possa controlar todos os parasitas. Eu não sei se essa parte é possível. Será que meu corpo pode ser meu só porque eu quero que seja? Eu não sei se foi isso que Deus planejou quando criou o homem e a mulher.',
+  ],
+  afterLace: [
+    'Se Deus medisse o desejo, meu corpo já seria meu, e de noite eu só veria preto, e de dia eu andaria com calma.',
+  ],
+} as const;
+
+function makeTextBlock(className: string, paragraphs: readonly string[]) {
+  const block = document.createElement('div');
+  block.className = `vertical-text-block ${className}`;
+  for (const text of paragraphs) {
+    const paragraph = document.createElement('p');
+    paragraph.textContent = text;
+    block.append(paragraph);
+  }
+  return block;
+}
+
+function renderVerticalTexts(journey: HTMLElement) {
+  const vertical = journey.querySelector<HTMLElement>('.vertical-installation');
+  const firstScene = vertical?.querySelector<HTMLElement>('.scene-left');
+  const secondScene = vertical?.querySelector<HTMLElement>('.scene-right');
+  const lace = vertical?.querySelector<HTMLImageElement>('.lace-art');
+  if (!vertical || !firstScene || !secondScene || !lace) return;
+
+  vertical.querySelectorAll('.vertical-text-block').forEach((node) => node.remove());
+
+  const first = makeTextBlock('vertical-text-first', VERTICAL_TEXT.first);
+  const second = makeTextBlock('vertical-text-second', VERTICAL_TEXT.second);
+  const afterLace = makeTextBlock('vertical-text-after-lace', VERTICAL_TEXT.afterLace);
+  vertical.append(first, second, afterLace);
+
+  function place() {
+    const verticalBounds = vertical.getBoundingClientRect();
+    const firstBounds = firstScene.getBoundingClientRect();
+    const secondBounds = secondScene.getBoundingClientRect();
+    const laceBounds = lace.getBoundingClientRect();
+    const branchValue = Number.parseFloat(getComputedStyle(vertical).getPropertyValue('--branch-x'));
+    const branchX = Number.isFinite(branchValue) ? branchValue : verticalBounds.width / 2;
+    const gap = Math.max(12, Math.min(28, verticalBounds.width * 0.02));
+    const margin = 12;
+
+    Object.assign(first.style, {
+      left: `${branchX + gap}px`,
+      top: `${firstBounds.top - verticalBounds.top + firstBounds.height / 2}px`,
+      width: `${Math.max(120, verticalBounds.width - branchX - gap - margin)}px`,
+    });
+    Object.assign(second.style, {
+      left: `${margin}px`,
+      top: `${secondBounds.top - verticalBounds.top + secondBounds.height / 2}px`,
+      width: `${Math.max(120, branchX - gap - margin)}px`,
+    });
+    Object.assign(afterLace.style, {
+      left: `${laceBounds.left - verticalBounds.left + laceBounds.width / 2}px`,
+      top: `${laceBounds.bottom - verticalBounds.top + 18}px`,
+    });
+  }
+
+  const resizeObserver = new ResizeObserver(place);
+  for (const element of [vertical, firstScene, secondScene, lace]) resizeObserver.observe(element);
+  const styleObserver = new MutationObserver(place);
+  styleObserver.observe(vertical, { attributes: true, attributeFilter: ['style'] });
+  lace.addEventListener('load', place);
+  place();
+
+  return () => {
+    resizeObserver.disconnect();
+    styleObserver.disconnect();
+    lace.removeEventListener('load', place);
+    first.remove();
+    second.remove();
+    afterLace.remove();
+  };
+}
 
 /** Native horizontal touch scrolling shares progress with the vertical journey. */
 export function initializeScrollJourney({ journey, track, onComplete }: JourneyElements) {
@@ -219,11 +302,13 @@ export function initializeScrollJourney({ journey, track, onComplete }: JourneyE
   measure();
   track.removeAttribute('aria-describedby');
   const cleanupCord = initializeCordReveal({ journey, track, sequence, experience });
+  const cleanupVerticalTexts = renderVerticalTexts(journey);
   track.focus({ preventScroll: true });
 
   return () => {
     observer.disconnect();
     cleanupCord?.();
+    cleanupVerticalTexts?.();
     captionStage.querySelector('.embroidery-caption-layer')?.remove();
     cancelAnimationFrame(frame);
     journey.removeEventListener('scroll', scheduleUpdate);
