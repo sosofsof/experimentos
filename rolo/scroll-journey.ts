@@ -59,19 +59,24 @@ function renderVerticalTexts(journey: HTMLElement) {
   const lace = vertical?.querySelector<HTMLImageElement>('.lace-art');
   if (!vertical || !firstScene || !secondScene || !lace) return;
 
-  vertical.querySelectorAll('.vertical-text-block').forEach((node) => node.remove());
+  const verticalElement = vertical;
+  const firstSceneElement = firstScene;
+  const secondSceneElement = secondScene;
+  const laceElement = lace;
+
+  verticalElement.querySelectorAll('.vertical-text-block').forEach((node) => node.remove());
 
   const first = makeTextBlock('vertical-text-first', VERTICAL_TEXT.first);
   const second = makeTextBlock('vertical-text-second', VERTICAL_TEXT.second);
   const afterLace = makeTextBlock('vertical-text-after-lace', VERTICAL_TEXT.afterLace);
-  vertical.append(first, second, afterLace);
+  verticalElement.append(first, second, afterLace);
 
   function place() {
-    const verticalBounds = vertical.getBoundingClientRect();
-    const firstBounds = firstScene.getBoundingClientRect();
-    const secondBounds = secondScene.getBoundingClientRect();
-    const laceBounds = lace.getBoundingClientRect();
-    const branchValue = Number.parseFloat(getComputedStyle(vertical).getPropertyValue('--branch-x'));
+    const verticalBounds = verticalElement.getBoundingClientRect();
+    const firstBounds = firstSceneElement.getBoundingClientRect();
+    const secondBounds = secondSceneElement.getBoundingClientRect();
+    const laceBounds = laceElement.getBoundingClientRect();
+    const branchValue = Number.parseFloat(getComputedStyle(verticalElement).getPropertyValue('--branch-x'));
     const branchX = Number.isFinite(branchValue) ? branchValue : verticalBounds.width / 2;
     const gap = Math.max(12, Math.min(28, verticalBounds.width * 0.02));
     const margin = 12;
@@ -93,16 +98,18 @@ function renderVerticalTexts(journey: HTMLElement) {
   }
 
   const resizeObserver = new ResizeObserver(place);
-  for (const element of [vertical, firstScene, secondScene, lace]) resizeObserver.observe(element);
+  for (const element of [verticalElement, firstSceneElement, secondSceneElement, laceElement]) {
+    resizeObserver.observe(element);
+  }
   const styleObserver = new MutationObserver(place);
-  styleObserver.observe(vertical, { attributes: true, attributeFilter: ['style'] });
-  lace.addEventListener('load', place);
+  styleObserver.observe(verticalElement, { attributes: true, attributeFilter: ['style'] });
+  laceElement.addEventListener('load', place);
   place();
 
   return () => {
     resizeObserver.disconnect();
     styleObserver.disconnect();
-    lace.removeEventListener('load', place);
+    laceElement.removeEventListener('load', place);
     first.remove();
     second.remove();
     afterLace.remove();
