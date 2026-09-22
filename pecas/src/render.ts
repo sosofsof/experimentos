@@ -30,20 +30,6 @@ export function renderRecipe(
     target.drawImage(im, -w / 2, -h / 2, w, h);
     target.restore();
   }
-  if (recipe.stitches?.length) {
-    target.save();
-    target.strokeStyle = '#c3293f';
-    target.lineWidth = Math.max(1.2, width * .0024);
-    target.lineCap = 'round';
-    target.setLineDash([Math.max(3, width * .008), Math.max(1.5, width * .004)]);
-    for (const stitch of recipe.stitches) {
-      target.beginPath();
-      target.moveTo(stitch.x1 * width, stitch.y1 * height);
-      target.lineTo(stitch.x2 * width, stitch.y2 * height);
-      target.stroke();
-    }
-    target.restore();
-  }
   frame(target, width, height);
 }
 

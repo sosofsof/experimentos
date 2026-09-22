@@ -5,17 +5,10 @@ export interface Piece {
   relative: number;
   rotation: number;
 }
-export interface Stitch {
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
-}
 export interface Recipe {
   version: 1;
   background: string;
   pieces: Piece[];
-  stitches?: Stitch[];
 }
 export interface Artwork {
   id: string;

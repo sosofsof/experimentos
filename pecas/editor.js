@@ -6,9 +6,7 @@ const ctx=canvas.getContext('2d'),ghost=document.getElementById('ghost'),empty=d
 const download=document.getElementById('download'),sidebar=document.querySelector('aside'),status=document.getElementById('status');
 const selection=document.getElementById('selection');
 const duplicate=document.getElementById('duplicate-handle');
-const placed=[],images=new Map(),masks=new Map(),touchPoints=new Map(),stitches=[];let selected=null,drag=null,pinch=null,category='retalho',W=1,H=1,exporting=false,stitchMode=false,stitchPreview=null;
-const stitchTool=document.createElement('button');stitchTool.type='button';stitchTool.className='stitch-tool';stitchTool.textContent='costura reta';stitchTool.setAttribute('aria-label','Costura reta vermelha');stitchTool.setAttribute('aria-pressed','false');stitchTool.title='Ative e arraste sobre a obra para desenhar uma costura reta vermelha.';document.querySelector('.art-actions').prepend(stitchTool);
-const stitchStyle=document.createElement('style');stitchStyle.textContent='.art-actions .stitch-tool[aria-pressed="true"]{background:#f7e2e5;color:#99203a}#canvas.is-stitching{cursor:crosshair}';document.head.append(stitchStyle);
+const placed=[],images=new Map(),masks=new Map(),touchPoints=new Map();let selected=null,drag=null,pinch=null,category='retalho',W=1,H=1,exporting=false;
 
 const backgroundSelect=document.getElementById('background');
 let background='branco';const backgroundImages=new Map();
@@ -50,12 +48,9 @@ function setRotation(p,rotation){
 }
 function syncControls(){
   duplicate.disabled=!selected||exporting||!!drag||!!pinch;
-  selection.hidden=!selected||exporting||stitchMode;
+  selection.hidden=!selected||exporting;
   canvas.classList.toggle('has-selection',!!selected);
   canvas.classList.toggle('is-dragging',!!drag||!!pinch);
-  canvas.classList.toggle('is-stitching',stitchMode);
-  stitchTool.setAttribute('aria-pressed',String(stitchMode));
-  stitchTool.disabled=exporting||!!drag||!!pinch;
   if(!selected)return;
   const dimensionsInCanvas=dimensions(selected);
   const w=Math.max(36,dimensionsInCanvas.w),h=Math.max(36,dimensionsInCanvas.h);
@@ -84,10 +79,10 @@ function localPoint(p,x,y){
   return {x:dx*Math.cos(r)+dy*Math.sin(r),y:-dx*Math.sin(r)+dy*Math.cos(r)};
 }
 function snapshot(p){return {x:p.x,y:p.y,relative:p.relative,rotation:p.rotation};}
-function recipe(){return {version:1,background,pieces:placed.map(p=>({id:p.asset.id,x:p.x,y:p.y,relative:p.relative,rotation:p.rotation||0})),...(stitches.length?{stitches:stitches.map(line=>({...line}))}:{})};}
+function recipe(){return {version:1,background,pieces:placed.map(p=>({id:p.asset.id,x:p.x,y:p.y,relative:p.relative,rotation:p.rotation||0}))};}
 window.artworkEditor={snapshot:recipe};
-function render(target,width,height){const artwork=recipe();if(stitchPreview)artwork.stitches=[...(artwork.stitches||[]),stitchPreview];window.ArtworkRendering.renderRecipe(target,width,height,artwork,images,backgroundImages);}
-function draw(){ctx.setTransform(canvas.width/W,0,0,canvas.height/H,0,0);render(ctx,W,H);empty.hidden=placed.length>0;empty.style.color=background==='preto'?'#fff':'#000';backgroundSelect.disabled=exporting;download.disabled=!placed.length||exporting||drag?.type==='stitch';document.getElementById('publish').disabled=!placed.length||exporting||drag?.type==='stitch';syncControls();}
+function render(target,width,height){window.ArtworkRendering.renderRecipe(target,width,height,recipe(),images,backgroundImages);}
+function draw(){ctx.setTransform(canvas.width/W,0,0,canvas.height/H,0,0);render(ctx,W,H);empty.hidden=placed.length>0;empty.style.color=background==='preto'?'#fff':'#000';backgroundSelect.disabled=exporting;download.disabled=!placed.length||exporting;document.getElementById('publish').disabled=!placed.length||exporting;syncControls();}
 function resize(){
   if(drag||pinch)cancelGesture();
   const r=workspace.getBoundingClientRect();
@@ -99,7 +94,6 @@ function resize(){
 function refresh(){catalog.replaceChildren();for(const a of assets.filter(a=>a.kind===category)){const b=document.createElement('button');b.type='button';b.className='asset';b.setAttribute('aria-label',`${a.label} — toque ou arraste para adicionar quantas vezes quiser`);const im=document.createElement('img');im.loading='lazy';im.decoding='async';im.src=a.src;im.alt='';im.draggable=false;b.append(im);b.addEventListener('pointerdown',e=>startCatalog(e,a,b));b.addEventListener('click',e=>{if(e.detail===0)add(a,W/2,H/2);});catalog.append(b);}}
 function add(a,x,y){if(exporting)return;ensureImage(a);const s=size(a);const p={asset:a,x:.5,y:.5,rotation:0,relative:clamp(Math.max(s.w,s.h)/Math.min(W,H),MIN_SCALE,MAX_SCALE)};placed.push(p);selected=p;keep(p,x,y);draw();status.textContent=`${a.label} adicionada. Você pode usar este elemento novamente pela barra lateral.`;}
 function point(e){const r=canvas.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top};}
-function stitchBetween(a,b){return {x1:clamp(a.x/W,0,1),y1:clamp(a.y/H,0,1),x2:clamp(b.x/W,0,1),y2:clamp(b.y/H,0,1)};}
 function hit(p,x,y){
   const a=p.asset,{w,h}=dimensions(p),q=localPoint(p,x,y);
   const mx=Math.floor((q.x+w/2)/w*a.maskWidth),my=Math.floor((q.y+h/2)/h*a.maskHeight);
@@ -129,7 +123,6 @@ function update(e){
    }
  }
  if(!drag||e.pointerId!==drag.id)return;
- if(drag.type==='stitch'){drag.end=point(e);stitchPreview=stitchBetween(drag.start,drag.end);e.preventDefault();draw();return;}
  if(drag.type==='new'){drag.im.style.left=e.clientX-drag.s.w/2+'px';drag.im.style.top=e.clientY-drag.s.h/2+'px';if(Math.hypot(e.clientX-drag.startX,e.clientY-drag.startY)>6)drag.moved=true;}
  else if(drag.type==='move'){
     const q=point(e);keep(drag.p,q.x-drag.dx,q.y-drag.dy);
@@ -149,11 +142,6 @@ function update(e){
 canvas.addEventListener('pointerdown',e=>{
  if(exporting||(e.pointerType!=='touch'&&e.button!==0))return;
  const q=point(e);
- if(stitchMode){
-   if(drag||pinch)return;
-   if(e.pointerType==='touch')touchPoints.set(e.pointerId,q);
-   canvas.setPointerCapture(e.pointerId);drag={type:'stitch',id:e.pointerId,owner:canvas,start:q,end:q};stitchPreview=stitchBetween(q,q);e.preventDefault();draw();return;
- }
  if(e.pointerType==='touch'){
    touchPoints.set(e.pointerId,q);canvas.setPointerCapture(e.pointerId);
    if(touchPoints.size===2){
@@ -175,21 +163,7 @@ canvas.addEventListener('pointerdown',e=>{
  draw();
 });
 document.addEventListener('pointermove',update);
-function finish(e,cancel=false){
-  if(!drag||(e&&e.pointerId!==drag.id))return;
-  const d=drag;drag=null;ghost.style.display='none';sidebar.classList.remove('drop-ready');
-  if(d.owner.hasPointerCapture(d.id))d.owner.releasePointerCapture(d.id);
-  if(cancel){if(d.p)Object.assign(d.p,d.original);stitchPreview=null;}
-  else if(d.type==='move'&&e&&overSidebar(e)){discard();}
-  else if(d.type==='new'){
-    const q=point(e);if(!d.moved)add(d.asset,W/2,H/2);else if(q.x>=0&&q.y>=0&&q.x<=W&&q.y<=H)add(d.asset,q.x,q.y);
-  }else if(d.type==='stitch'){
-    const q=e?point(e):d.end,line=stitchBetween(d.start,q);
-    if(Math.hypot((line.x2-line.x1)*W,(line.y2-line.y1)*H)>=6){stitches.push(line);status.textContent='Costura reta vermelha adicionada. Arraste novamente para fazer outra.';}
-    stitchPreview=null;
-  }
-  draw();
-}
+function finish(e,cancel=false){if(!drag||(e&&e.pointerId!==drag.id))return;const d=drag;drag=null;ghost.style.display='none';sidebar.classList.remove('drop-ready');if(d.owner.hasPointerCapture(d.id))d.owner.releasePointerCapture(d.id);if(cancel){if(d.p)Object.assign(d.p,d.original);}else if(d.type==='move'&&e&&overSidebar(e)){discard();}else if(d.type==='new'){const q=point(e);if(!d.moved)add(d.asset,W/2,H/2);else if(q.x>=0&&q.y>=0&&q.x<=W&&q.y<=H)add(d.asset,q.x,q.y);}draw();}
 function endPointer(e,cancel=false){
   const wasTouch=touchPoints.has(e.pointerId);if(wasTouch)touchPoints.delete(e.pointerId);
   if(pinch&&pinch.ids.includes(e.pointerId)){
@@ -225,11 +199,6 @@ function duplicateSelected(){
   status.textContent=`${copy.asset.label} duplicada com o mesmo tamanho e rotação. A cópia está selecionada.`;
 }
 duplicate.addEventListener('click',duplicateSelected);
-stitchTool.addEventListener('click',()=>{
-  if(exporting||drag||pinch)return;
-  stitchMode=!stitchMode;draw();
-  status.textContent=stitchMode?'Costura ativa. Arraste na obra para desenhar uma linha vermelha reta.':'Costura desativada.';
-});
 
 function startTransform(e,type){
   if(!selected||exporting||drag||pinch||e.button!==0)return;
@@ -243,7 +212,6 @@ document.getElementById('resize-handle').addEventListener('pointerdown',e=>start
 document.getElementById('rotate-handle').addEventListener('pointerdown',e=>startTransform(e,'rotate'));
 function keyboardTransform(e){
   if(exporting)return;
-  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'&&stitches.length){e.preventDefault();stitches.pop();draw();status.textContent='Última costura removida.';return;}
   if(e.key==='Escape'){e.preventDefault();const active=!!drag||!!pinch;cancelGesture();if(!active)selected=null;draw();canvas.focus();return;}
   if(e.key==='Enter'&&e.target===canvas){
     e.preventDefault();selected=placed[(placed.indexOf(selected)+1)%placed.length]||null;draw();return;

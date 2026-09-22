@@ -23,24 +23,12 @@ export function validatePublication(value: unknown) {
   if (data.publicConsent !== true) throw new RequestError('Confirme que deseja tornar a peça pública.');
   if (recipe.version !== 1 || typeof recipe.background !== 'string' || !backgrounds.has(recipe.background)) throw new RequestError('Catálogo ou fundo inválido.');
   if (!Array.isArray(recipe.pieces) || recipe.pieces.length < 1 || recipe.pieces.length > 200) throw new RequestError('Publique uma composição com 1 a 200 elementos.');
-  if (recipe.stitches !== undefined && (!Array.isArray(recipe.stitches) || recipe.stitches.length > 100)) {
-    throw new RequestError('A costura deve ter até 100 linhas retas.');
-  }
   const normalized: Recipe = {
     version: 1, background: recipe.background,
     pieces: recipe.pieces.map(value => {
       const piece = object(value);
       if (typeof piece.id !== 'string' || !assetIds.has(piece.id)) throw new RequestError('Elemento fora do catálogo.');
       return { id: piece.id, x: number(piece.x, -1, 2), y: number(piece.y, -1, 2), relative: number(piece.relative, .001, .9), rotation: number(piece.rotation, -180, 180) };
-    }),
-    ...(recipe.stitches === undefined ? {} : {
-      stitches: recipe.stitches.map(value => {
-        const stitch = object(value);
-        return {
-          x1: number(stitch.x1, 0, 1), y1: number(stitch.y1, 0, 1),
-          x2: number(stitch.x2, 0, 1), y2: number(stitch.y2, 0, 1),
-        };
-      }),
     }),
   };
   return { id: data.id, deleteToken: data.deleteToken, recipe: normalized };
