@@ -26,7 +26,7 @@
   overflow: hidden;
 }
 
-.journey .horizontal-track {
+.journey.journey-started .horizontal-track {
   overflow-x: auto !important;
   overflow-y: hidden !important;
   -webkit-overflow-scrolling: touch;
