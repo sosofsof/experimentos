@@ -26,7 +26,7 @@ const EMBROIDERY_CAPTIONS = new Map([
   ['1', 'Mas eu ainda torço para que eu esteja errada.'],
 ]);
 
-/** One native vertical scroll position drives both parts of the exhibition. */
+/** Native horizontal touch scrolling shares progress with the vertical journey. */
 export function initializeScrollJourney({ journey, track, onComplete }: JourneyElements) {
   const sequence = journey.querySelector<HTMLElement>('.horizontal-sequence');
   const experience = journey.querySelector<HTMLElement>('.experience');
@@ -41,6 +41,7 @@ export function initializeScrollJourney({ journey, track, onComplete }: JourneyE
   let frame = 0;
   let drag: DragPosition | null = null;
   let lastScrollTop = journey.scrollTop;
+  let lastTrackLeft = track.scrollLeft;
 
   function renderCaptions() {
     const cloth = captionStage.querySelector<HTMLElement>('.cloth');
@@ -69,7 +70,11 @@ export function initializeScrollJourney({ journey, track, onComplete }: JourneyE
     frame = 0;
     lastScrollTop = journey.scrollTop;
     const position = Math.min(distance, Math.max(0, journey.scrollTop));
-    track.scrollLeft = position;
+    // Avoid resetting native momentum for an already synchronized position.
+    if (Math.abs(track.scrollLeft - position) > END_TOLERANCE) {
+      track.scrollLeft = position;
+    }
+    lastTrackLeft = track.scrollLeft;
     const atEnd = position >= distance - END_TOLERANCE;
     journey.classList.toggle('horizontal-complete', atEnd);
 
@@ -79,7 +84,19 @@ export function initializeScrollJourney({ journey, track, onComplete }: JourneyE
     }
   }
 
+  function onTrackScroll() {
+    const position = Math.min(distance, Math.max(0, track.scrollLeft));
+    // Ignore scroll events caused by our vertical-to-horizontal writes.
+    if (Math.abs(position - lastTrackLeft) <= END_TOLERANCE) return;
+    lastTrackLeft = position;
+    if (journey.scrollTop > distance + END_TOLERANCE) return;
+    journey.scrollTop = position;
+    update();
+  }
+
   function scheduleUpdate() {
+    // A native horizontal frame may arrive before its scroll event.
+    onTrackScroll();
     if (!frame) frame = requestAnimationFrame(update);
   }
 
@@ -93,6 +110,7 @@ export function initializeScrollJourney({ journey, track, onComplete }: JourneyE
       ? artworkBounds.left - track.getBoundingClientRect().left + track.scrollLeft + artworkBounds.width / 2
       : null;
     if (connectionX !== null) {
+      stage.style.width = `${Math.max(track.clientWidth, Math.ceil(connectionX + track.clientWidth / 2))}px`;
       stage.style.minWidth = `${Math.max(track.clientWidth, Math.ceil(connectionX + track.clientWidth / 2))}px`;
     }
     const nextDistance = connectionX !== null
@@ -140,15 +158,18 @@ export function initializeScrollJourney({ journey, track, onComplete }: JourneyE
   }
 
   function onWheel(event: WheelEvent) {
-    if (event.ctrlKey || event.metaKey || Math.abs(event.deltaY) >= Math.abs(event.deltaX)) return;
-    if (journey.scrollTop > distance + END_TOLERANCE) return;
+    // Horizontal wheel/trackpad input belongs to the native horizontal scroller.
+    // Vertical wheel input continues through the outer journey.
+    if (event.ctrlKey || event.metaKey || Math.abs(event.deltaX) >= Math.abs(event.deltaY)) return;
     const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? journey.clientHeight : 1;
     event.preventDefault();
-    journey.scrollTop += event.deltaX * unit;
+    journey.scrollTop += event.deltaY * unit;
     update();
   }
 
   function onPointerDown(event: PointerEvent) {
+    // Touch and pen use browser scrolling, including momentum and pinch zoom.
+    if (event.pointerType !== 'mouse') return;
     if (!event.isPrimary || event.button !== 0) {
       drag = null;
       return;
@@ -187,6 +208,7 @@ export function initializeScrollJourney({ journey, track, onComplete }: JourneyE
   observer.observe(experience);
   journey.addEventListener('scroll', scheduleUpdate, { passive: true });
   journey.addEventListener('keydown', onKeyDown);
+  track.addEventListener('scroll', onTrackScroll, { passive: true });
   track.addEventListener('wheel', onWheel, { passive: false });
   track.addEventListener('pointerdown', onPointerDown);
   track.addEventListener('pointermove', onPointerMove);
@@ -206,6 +228,7 @@ export function initializeScrollJourney({ journey, track, onComplete }: JourneyE
     cancelAnimationFrame(frame);
     journey.removeEventListener('scroll', scheduleUpdate);
     journey.removeEventListener('keydown', onKeyDown);
+    track.removeEventListener('scroll', onTrackScroll);
     track.removeEventListener('wheel', onWheel);
     track.removeEventListener('pointerdown', onPointerDown);
     track.removeEventListener('pointermove', onPointerMove);
