@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="color-scheme" content="light">
     <meta name="theme-color" content="#ffffff">
-    <meta name="description" content="Dezoito cartas para descobrir, uma de cada vez.">
+    <meta name="description" content="Selecione três cartas para descobrir sua leitura.">
     <title>Cartas de tarô</title>
 <link rel="stylesheet" href="../assets/typography.css">
     <link rel="stylesheet" href="./style.css">
@@ -19,14 +19,20 @@
 </nav>
 
     <main class="table">
-      <h1 class="sr-only">Cartas de tarô</h1>
-      <div id="cards" class="cards" role="group" aria-label="Escolha uma das dezoito cartas"></div>
+      <h1 class="selection-prompt">Selecione 3 cartas</h1>
+      <p id="selection-status" class="selection-status" aria-live="polite">0 de 3 cartas selecionadas</p>
+      <div id="cards" class="cards" role="group" aria-label="Escolha três das dezoito cartas"></div>
       <noscript>Ative o JavaScript no navegador para escolher e abrir as cartas.</noscript>
     </main>
 
-    <section id="viewer" class="viewer" aria-label="Carta e bordado oração" hidden>
+    <section id="viewer" class="viewer" aria-label="Leitura de três cartas" hidden>
       <button id="close-viewer" class="viewer-close" type="button" aria-label="Fechar">✕</button>
-      <canvas id="prayer-image" class="prayer-image" role="img" aria-label="Bordado oração: Aberta" hidden></canvas>
+      <div id="reading" class="reading" aria-live="polite">
+        <article class="reading-item"><div class="reading-card-slot"></div><p class="reading-name"></p><p class="reading-label"></p></article>
+        <article class="reading-item"><div class="reading-card-slot"></div><p class="reading-name"></p><p class="reading-label"></p></article>
+        <article class="reading-item"><div class="reading-card-slot"></div><p class="reading-name"></p><p class="reading-label"></p></article>
+      </div>
+      <canvas id="prayer-image" role="img" aria-label="Revelação de teste: Aberta" hidden></canvas>
     </section>
     <script src="./oracao.js" defer></script>
     <script src="./cartas.js" defer></script>

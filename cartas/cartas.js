@@ -20,15 +20,24 @@ const cards = [
   { name: 'Surpresa agradável', front: 'IMG_2776_element_06.png', back: 'IMG_2775_element_14-2.webp' }
 ];
 
+// A única revelação disponível ainda é a imagem de teste “Aberta”.
+// O campo fica ligado a cada carta para poder receber textos próprios depois.
+for (const card of cards) card.revelation = 'Aberta';
 
 const grid = document.getElementById('cards');
 const viewer = document.getElementById('viewer');
+const reading = document.getElementById('reading');
+const slots = [...document.querySelectorAll('.reading-card-slot')];
 const prayerImage = document.getElementById('prayer-image');
 const closeButton = document.getElementById('close-viewer');
+const selectionStatus = document.getElementById('selection-status');
 const imageCache = new Map();
-let phase = 'idle';
-let selected = null;
-let originalBack = null;
+const buttons = [];
+const backs = new WeakMap();
+let phase = 'selecting';
+let selected = [];
+let runId = 0;
+
 function loadFront(filename) {
   if (imageCache.has(filename)) return imageCache.get(filename);
   const pending = new Promise((resolve, reject) => {
@@ -36,9 +45,9 @@ function loadFront(filename) {
     image.decoding = 'async';
     image.onload = async () => {
       if (image.decode) {
-        try { await image.decode(); } catch { /* A imagem já carregada continua disponível. */ }
+        try { await image.decode(); } catch { /* A imagem carregada continua disponível. */ }
       }
-      resolve(image.src);
+      resolve(image);
     };
     image.onerror = () => reject(new Error('Image unavailable'));
     image.src = './assets/frentes/' + filename;
@@ -48,127 +57,186 @@ function loadFront(filename) {
   return pending;
 }
 
-
 async function animate(element, frames, duration) {
   const animation = element.animate(frames, {
     duration: matchMedia('(prefers-reduced-motion: reduce)').matches ? 1 : duration,
-    easing:'cubic-bezier(.4,0,.2,1)', fill:'both'
+    easing: 'cubic-bezier(.4,0,.2,1)', fill: 'both'
   });
-  await animation.finished;
+  try { await animation.finished; } catch { return; }
   Object.assign(element.style, frames.at(-1));
   animation.cancel();
 }
-function rectStyles(x, y, width, height) {
-  return {left:x+'px', top:y+'px', width:width+'px', height:height+'px'};
+
+function rectStyles(rect) {
+  return { left: rect.left + 'px', top: rect.top + 'px', width: rect.width + 'px', height: rect.height + 'px' };
 }
-function centeredSize(image) {
-  const ratio = image.naturalWidth/image.naturalHeight;
-  const height = Math.min(innerHeight-128, (innerWidth-48)/ratio, 760);
-  const width = height*ratio;
-  return rectStyles((innerWidth-width)/2,(innerHeight-height)/2,width,height);
+
+function createRevelationCopy(card) {
+  const canvas = document.createElement('canvas');
+  canvas.className = 'reading-revelation';
+  canvas.width = prayerImage.width;
+  canvas.height = prayerImage.height;
+  canvas.setAttribute('role', 'img');
+  canvas.setAttribute('aria-label', `Revelação da carta ${card.name}: ${card.revelation}`);
+  const context = canvas.getContext('2d');
+  if (context) context.drawImage(prayerImage, 0, 0);
+  return canvas;
 }
-async function openCard(card, button) {
-  if (phase !== 'idle') return;
-  phase = 'exiting';
-  selected = button;
-  originalBack = button.firstElementChild;
-  const start = button.getBoundingClientRect();
-  const positions = [...grid.children].filter(el=>el!==button).map(el=>({el,r:el.getBoundingClientRect()}));
-  // The original button stays in its original DOM parent for every stage.
-  Object.assign(button.style,rectStyles(start.left,start.top,start.width,start.height));
-  button.classList.add('selected');
+
+async function openReading() {
+  const token = ++runId;
+  phase = 'opening';
   document.body.classList.add('active');
+  const entries = [...selected];
   try {
-    const frontReady = loadFront(card.front);
-    const cx=start.left+start.width/2, cy=start.top+start.height/2;
-    const routes=positions.map(({el,r})=>({el,r,dx:r.left+r.width/2-cx,dy:r.top+r.height/2-cy}));
-    const factor=Math.max(...routes.map(({r,dx,dy})=>Math.min(
-      dx>0?(innerWidth-r.left+30)/dx:dx<0?(-r.right-30)/dx:Infinity,
-      dy>0?(innerHeight-r.top+30)/dy:dy<0?(-r.bottom-30)/dy:Infinity
-    )));
-    await Promise.all(routes.map(async ({el,r,dx,dy})=>{
-      // Freeze the layout before the selected button leaves grid flow.
-      Object.assign(el.style,rectStyles(r.left,r.top,r.width,r.height),{position:'fixed'});
-      await animate(el,[{transform:'none'},{transform:`translate(${dx*factor}px,${dy*factor}px)`}],1000);
-      el.style.visibility='hidden';
-    }));
-    phase='centering';
-    const center=rectStyles((innerWidth-start.width)/2,(innerHeight-start.height)/2,start.width,start.height);
-    await animate(button,[rectStyles(start.left,start.top,start.width,start.height),center],650);
-    const front = new Image();
-    front.src=await frontReady;
-    await front.decode();
-    front.className='front';
-    front.alt='Carta de tarô: '+card.name;
-    phase='flipping';
-    await animate(button,[{transform:'perspective(1000px) rotateY(0deg)'},{transform:'perspective(1000px) rotateY(90deg)'}],350);
-    button.replaceChildren(front);
-    await animate(button,[{transform:'perspective(1000px) rotateY(-90deg)'},{transform:'none'}],350);
-    phase='zooming';
-    await animate(button,[center,centeredSize(front)],850);
-    viewer.hidden=false;
-    phase='card';
-  } catch (error) {
-    reset();
-    console.error(error);
-  }
-}
-async function showPrayer() {
-  if (phase !== 'card') return;
-  phase='prayer-entering';
-  try {
+    const fronts = await Promise.all(entries.map(({ card }) => loadFront(card.front)));
     await renderPrayer(prayerImage);
-    const r=selected.getBoundingClientRect();
-    const gap=Math.min(64,innerWidth*.04), margin=24;
-    const available=innerWidth-2*margin-gap;
-    const ratio=selected.firstElementChild.naturalWidth/selected.firstElementChild.naturalHeight;
-    const cw=Math.min(available*.28,(innerHeight-128)*ratio);
-    const ch=cw/ratio;
-    const pw=available-cw;
-    const ph=Math.min(pw*prayerImage.height/prayerImage.width,innerHeight-128);
-    const actualPW=ph*prayerImage.width/prayerImage.height;
-    const left=(innerWidth-cw-gap-actualPW)/2;
-    Object.assign(prayerImage.style,rectStyles(left+cw+gap,(innerHeight-ph)/2,actualPW,ph));
-    prayerImage.hidden=false;
+    if (token !== runId) return;
+
+    entries.forEach(({ card }, index) => {
+      const item = slots[index].parentElement;
+      item.querySelector('.reading-label').textContent = card.revelation;
+      item.querySelector('.reading-name').textContent = card.name;
+      item.insertBefore(createRevelationCopy(card), item.querySelector('.reading-label'));
+    });
+    viewer.hidden = false;
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    if (token !== runId) return;
+
+    const starts = buttons.map(button => button.getBoundingClientRect());
+    const ends = slots.map(slot => slot.getBoundingClientRect());
+    const selectedStarts = entries.map(({ button }) => starts[buttons.indexOf(button)]);
+    const centerHeight = Math.min(...selectedStarts.map(rect => rect.height), innerHeight - 180);
+    const centerWidth = centerHeight * 2 / 3;
+    const centerGap = Math.min(14, innerWidth * .025);
+    const centerLeft = (innerWidth - centerWidth * 3 - centerGap * 2) / 2;
+    const centers = entries.map((_, index) => ({
+      left: centerLeft + index * (centerWidth + centerGap),
+      top: (innerHeight - centerHeight) / 2,
+      width: centerWidth,
+      height: centerHeight
+    }));
+    buttons.forEach((button, index) => {
+      Object.assign(button.style, rectStyles(starts[index]), { position: 'fixed', zIndex: selected.some(item => item.button === button) ? '20' : '11' });
+      button.classList.remove('picked');
+    });
+
+    const chosen = new Set(entries.map(item => item.button));
+    const centerX = innerWidth / 2;
+    const centerY = innerHeight / 2;
+    const routes = buttons.filter(button => !chosen.has(button)).map(button => {
+      const rect = button.getBoundingClientRect();
+      const dx = rect.left + rect.width / 2 - centerX;
+      const dy = rect.top + rect.height / 2 - centerY;
+      return { button, rect, dx, dy };
+    });
+    const factor = Math.max(1, ...routes.map(({ rect, dx, dy }) => Math.min(
+      dx > 0 ? (innerWidth - rect.left + 30) / dx : dx < 0 ? (-rect.right - 30) / dx : Infinity,
+      dy > 0 ? (innerHeight - rect.top + 30) / dy : dy < 0 ? (-rect.bottom - 30) / dy : Infinity
+    )));
+
     await Promise.all([
-      animate(selected,[rectStyles(r.left,r.top,r.width,r.height),rectStyles(left,(innerHeight-ch)/2,cw,ch)],800),
-      animate(prayerImage,[{transform:`translateX(${innerWidth-left-cw-gap+32}px)`},{transform:'none'}],800)
+      ...routes.map(async ({ button, dx, dy }) => {
+        await animate(button, [{ transform: 'none' }, { transform: `translate(${dx * factor}px,${dy * factor}px)` }], 850);
+        if (token === runId) button.style.visibility = 'hidden';
+      }),
+      ...entries.map(({ button }, index) => animate(button, [rectStyles(selectedStarts[index]), rectStyles(centers[index])], 700))
     ]);
-    phase='prayer';
-  } catch(error) { phase='card'; console.error(error); }
-}
-function reset() {
-  viewer.hidden=true;
-  prayerImage.hidden=true;
-  document.body.classList.remove('active');
-  for(const el of grid.children) {
-    el.getAnimations().forEach(a=>a.cancel());
-    el.removeAttribute('style');
-    el.classList.remove('selected');
+    if (token !== runId) return;
+
+    await Promise.all(entries.map(async ({ card, button }, index) => {
+      const front = fronts[index].cloneNode(false);
+      front.className = 'front';
+      front.alt = `Carta de tarô: ${card.name}`;
+      await animate(button, [{ transform: 'perspective(1000px) rotateY(0deg)' }, { transform: 'perspective(1000px) rotateY(90deg)' }], 350);
+      if (token !== runId) return;
+      button.replaceChildren(front);
+      await animate(button, [{ transform: 'perspective(1000px) rotateY(-90deg)' }, { transform: 'none' }], 350);
+    }));
+    if (token !== runId) return;
+
+    await Promise.all(entries.map(({ button }, index) => animate(button, [rectStyles(centers[index]), rectStyles(ends[index])], 700)));
+    if (token !== runId) return;
+
+    entries.forEach(({ button }, index) => {
+      slots[index].append(button);
+      button.classList.remove('selected', 'picked');
+      button.classList.add('reading-card');
+      button.removeAttribute('style');
+    });
+    reading.classList.add('is-ready');
+    phase = 'reading';
+    selectionStatus.textContent = 'Leitura completa';
+    closeButton.focus({ preventScroll: true });
+  } catch (error) {
+    if (token === runId) {
+      reset();
+      console.error(error);
+    }
   }
-  if(selected && originalBack) selected.replaceChildren(originalBack);
-  selected?.focus({preventScroll:true});
-  selected=null;
-  phase='idle';
 }
-cards.forEach((card,index)=>{
-  const button=document.createElement('button');
-  button.type='button';
-  button.className='card';
-  button.setAttribute('aria-label','Revelar carta '+(index+1));
-  const image=new Image();
-  image.className='card-image';
-  image.src='./assets/versos/' + card.back;
-  image.alt='';
-  image.draggable=false;
+
+function choose(card, button) {
+  if (phase !== 'selecting') return;
+  const existing = selected.findIndex(item => item.button === button);
+  if (existing !== -1) {
+    selected.splice(existing, 1);
+    button.classList.remove('picked');
+    button.setAttribute('aria-pressed', 'false');
+    selectionStatus.textContent = `${selected.length} de 3 cartas selecionadas`;
+    return;
+  }
+  selected.push({ card, button });
+  button.classList.add('picked');
+  button.setAttribute('aria-pressed', 'true');
+  selectionStatus.textContent = `${selected.length} de 3 cartas selecionadas`;
+  if (selected.length === 3) void openReading();
+}
+
+function reset() {
+  runId++;
+  const returnFocus = selected.at(-1)?.button;
+  viewer.hidden = true;
+  reading.classList.remove('is-ready');
+  document.body.classList.remove('active');
+  for (const item of slots) {
+    item.replaceChildren();
+    item.parentElement.querySelector('.reading-label').textContent = '';
+    item.parentElement.querySelector('.reading-name').textContent = '';
+  }
+  for (const button of buttons) {
+    button.getAnimations().forEach(animation => animation.cancel());
+    button.classList.remove('selected', 'picked', 'reading-card');
+    button.removeAttribute('style');
+    button.setAttribute('aria-pressed', 'false');
+    button.replaceChildren(backs.get(button));
+    grid.append(button);
+  }
+  selected = [];
+  phase = 'selecting';
+  selectionStatus.textContent = '0 de 3 cartas selecionadas';
+  returnFocus?.focus({ preventScroll: true });
+}
+
+cards.forEach((card, index) => {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'card';
+  button.setAttribute('aria-label', 'Selecionar carta ' + (index + 1));
+  button.setAttribute('aria-pressed', 'false');
+  const image = new Image();
+  image.className = 'card-image';
+  image.src = './assets/versos/' + card.back;
+  image.alt = '';
+  image.draggable = false;
   button.append(image);
-  button.addEventListener('click',()=>openCard(card,button));
+  backs.set(button, image);
+  button.addEventListener('click', () => choose(card, button));
+  buttons.push(button);
   grid.append(button);
 });
-document.addEventListener('click',event=>{
-  if(event.target.closest('#close-viewer')) { reset(); return; }
-  showPrayer();
-});
-document.addEventListener('keydown',event=>{
-  if(event.key==='Escape' && ['card','prayer'].includes(phase)) reset();
+
+closeButton.addEventListener('click', reset);
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && (phase !== 'selecting' || selected.length)) reset();
 });
