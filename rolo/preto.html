@@ -69,12 +69,12 @@
   <svg class="switch-filter-defs" aria-hidden="true" width="0" height="0">
     <filter id="switch-deep-red" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
       <feComponentTransfer>
-        <feFuncA type="gamma" amplitude="1" exponent=".08" offset=".12"/>
+        <feFuncA type="gamma" amplitude="1" exponent=".05" offset=".16"/>
       </feComponentTransfer>
       <feColorMatrix type="matrix" values="
-        0 0 0 0 .68
+        0 0 0 0 .70
         0 0 0 0 .025
-        0 0 0 0 .055
+        0 0 0 0 .060
         0 0 0 1 0"/>
     </filter>
   </svg>
@@ -89,15 +89,23 @@
     const cx = Number(params.get('cx'));
     const cy = Number(params.get('cy'));
     const root = document.documentElement;
-    if (Number.isFinite(cx)) root.style.setProperty('--switch-cx', `${cx}px`);
-    if (Number.isFinite(cy)) root.style.setProperty('--switch-cy', `${cy}px`);
+    const viewport = window.visualViewport;
+
+    if (Number.isFinite(cx)) {
+      root.style.setProperty('--switch-cx', `${cx + (viewport?.offsetLeft ?? 0)}px`);
+    }
+    if (Number.isFinite(cy)) {
+      root.style.setProperty('--switch-cy', `${cy + (viewport?.offsetTop ?? 0)}px`);
+    }
 
     requestAnimationFrame(() => {
       const main = document.querySelector('main');
       if (!main) return;
-      const styles = getComputedStyle(main);
-      const overscanX = parseFloat(styles.getPropertyValue('--overscan-x')) || 0;
-      const overscanY = parseFloat(styles.getPropertyValue('--overscan-y')) || 0;
+      const rect = main.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      const overscanX = Math.max(0, (rect.width - viewportWidth) / 2);
+      const overscanY = Math.max(0, (rect.height - viewportHeight) / 2);
       window.scrollTo({ left: overscanX, top: overscanY, behavior: 'auto' });
     });
   </script>
