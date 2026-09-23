@@ -11,6 +11,7 @@ export function initializeFinalSwitch(journey: HTMLElement) {
   button.type = 'button';
   button.className = 'final-switch';
   button.setAttribute('aria-label', 'Apagar a luz');
+  button.setAttribute('aria-pressed', 'false');
 
   for (const [className, filename] of [['switch-frame', 'interruptor-moldura'], ['switch-key', 'interruptor-tecla']]) {
     const image = document.createElement('img');
@@ -27,11 +28,14 @@ export function initializeFinalSwitch(journey: HTMLElement) {
   scene.setAttribute('aria-label', 'Interruptor no fim do cordão de miçangas');
   artwork.replaceWith(button);
 
+  let isOff = false;
+
   function switchOff() {
-    if (button.disabled) return;
+    if (isOff) return;
+    isOff = true;
 
     // Keep this exact DOM node and its current layout position. Only the page state changes.
-    button.disabled = true;
+    button.setAttribute('aria-pressed', 'true');
     button.classList.add('is-off');
     journey.classList.add('final-blackout-active');
     document.documentElement.classList.add('final-blackout-active');
