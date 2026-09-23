@@ -77,15 +77,37 @@ function renderVerticalTexts(journey: HTMLElement) {
     firstScene!.style.setProperty('--narrative-height', `${first.scrollHeight + 64}px`);
     secondScene!.style.setProperty('--narrative-height', `${second.scrollHeight + 64}px`);
   }
-  const resizeObserver = new ResizeObserver(fitScenes);
+
+  function fitFinalTail() {
+    const journeyBounds = journey.getBoundingClientRect();
+    const switchBounds = lace.getBoundingClientRect();
+    const switchCenter = switchBounds.top - journeyBounds.top + journey.scrollTop + switchBounds.height / 2;
+    const currentPadding = Number.parseFloat(getComputedStyle(afterLace).paddingBottom) || 0;
+    const currentTail = journey.scrollHeight - switchCenter;
+    const desiredTail = journey.clientHeight / 2;
+    const nextPadding = Math.max(64, currentPadding + desiredTail - currentTail);
+    if (Math.abs(nextPadding - currentPadding) > 1) {
+      afterLace.style.setProperty('--final-bottom-space', `${nextPadding}px`);
+    }
+  }
+
+  const resizeObserver = new ResizeObserver(() => {
+    fitScenes();
+    fitFinalTail();
+  });
   resizeObserver.observe(first);
   resizeObserver.observe(second);
+  resizeObserver.observe(lace);
+  resizeObserver.observe(afterLace);
+  resizeObserver.observe(journey);
   fitScenes();
+  fitFinalTail();
 
   return () => {
     resizeObserver.disconnect();
     firstScene.style.removeProperty('--narrative-height');
     secondScene.style.removeProperty('--narrative-height');
+    afterLace.style.removeProperty('--final-bottom-space');
     first.remove();
     second.remove();
     afterLace.remove();
