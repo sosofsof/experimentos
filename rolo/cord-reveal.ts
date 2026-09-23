@@ -98,7 +98,7 @@ export function initializeCordReveal({ journey, track, sequence, experience }: C
     const heartTop = heartBounds.top - viewport.top + journey.scrollTop;
     const mainTop = distance + cloth.getBoundingClientRect().bottom - experience.getBoundingClientRect().top - 16;
     const tailTop = heartTop + heartBounds.width * 389 / 440;
-    const tailBottom = lace.getBoundingClientRect().top - viewport.top + journey.scrollTop - (96 / 2.54) * 2.5;
+    const tailBottom = lace.getBoundingClientRect().top - viewport.top + journey.scrollTop - (96 / 2.54) * 3;
     const width = source.getBoundingClientRect().width;
 
     revealedTo = geometry ? revealedTo + mainTop - geometry.mainTop : mainTop;
