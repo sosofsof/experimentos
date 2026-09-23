@@ -28,6 +28,17 @@ export function initializeFinalSwitch(journey: HTMLElement) {
     button!.classList.remove('is-off');
   }
   function switchOff() {
+    const bounds = button!.getBoundingClientRect();
+    const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+    try {
+      sessionStorage.setItem('rolo-final-switch-position', JSON.stringify({
+        x: (bounds.left + bounds.width / 2) / viewportWidth,
+        y: (bounds.top + bounds.height / 2) / viewportHeight,
+      }));
+    } catch {
+      // The black page falls back to the viewport center when storage is unavailable.
+    }
     button!.disabled = true;
     button!.classList.add('is-off');
     const delay = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 260;
