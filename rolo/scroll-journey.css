@@ -267,4 +267,5 @@ body.final-blackout-active .journey {
 .journey.final-blackout-active .final-switch {
   z-index: 2147483647;
   cursor: default;
+  pointer-events: none;
 }
