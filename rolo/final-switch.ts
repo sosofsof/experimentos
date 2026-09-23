@@ -1,34 +1,9 @@
-const SWITCH_FILTER_ID = 'switch-deep-red';
-
-function ensureSwitchFilter() {
-  if (document.getElementById(SWITCH_FILTER_ID)) return;
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('aria-hidden', 'true');
-  svg.setAttribute('width', '0');
-  svg.setAttribute('height', '0');
-  svg.style.position = 'fixed';
-  svg.style.pointerEvents = 'none';
-  svg.innerHTML = `
-    <filter id="${SWITCH_FILTER_ID}" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
-      <feComponentTransfer>
-        <feFuncA type="gamma" amplitude="1" exponent=".05" offset=".16"/>
-      </feComponentTransfer>
-      <feColorMatrix type="matrix" values="
-        0 0 0 0 .70
-        0 0 0 0 .025
-        0 0 0 0 .060
-        0 0 0 1 0"/>
-    </filter>`;
-  document.body.append(svg);
-}
-
 /** Finish the textile journey in a separate document with no scrollable past. */
 export function initializeFinalSwitch(journey: HTMLElement) {
   const artwork = journey.querySelector<HTMLImageElement>('.lace-art');
   const scene = artwork?.closest<HTMLElement>('.scene-lace');
   if (!artwork || !scene) return;
   const sceneLabel = scene.getAttribute('aria-label');
-  ensureSwitchFilter();
   const button = document.createElement('button');
   button.type = 'button';
   button.className = 'final-switch';
@@ -36,9 +11,9 @@ export function initializeFinalSwitch(journey: HTMLElement) {
   for (const [className, filename] of [['switch-frame', 'interruptor-moldura'], ['switch-key', 'interruptor-tecla']]) {
     const image = document.createElement('img');
     image.className = className;
-    image.src = new URL(`./assets/${filename}.svg`, window.location.href).href;
-    image.width = 1290;
-    image.height = 1650;
+    image.src = new URL(`./assets/${filename}.webp`, window.location.href).href;
+    image.width = 1235;
+    image.height = 1583;
     image.alt = '';
     image.draggable = false;
     button.append(image);
