@@ -10,20 +10,25 @@
     html, body {
       margin: 0;
       width: 100%;
-      height: 100%;
-      overflow: hidden;
-      overscroll-behavior: none;
+      min-height: 100%;
       background: #000;
+      overscroll-behavior: contain;
     }
     body {
-      position: fixed;
-      inset: 0;
-      touch-action: none;
+      min-width: 100%;
+      min-height: 100%;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-x pan-y;
     }
     main {
+      --overscan-x: 16vw;
+      --overscan-y: 18vh;
       position: relative;
-      width: 100%;
-      height: 100%;
+      width: calc(100vw + 2 * var(--overscan-x));
+      height: calc(100vh + 2 * var(--overscan-y));
+      min-width: 100%;
+      min-height: 100%;
       background: #000;
     }
     .switch-filter-defs {
@@ -34,8 +39,8 @@
     }
     .final-switch {
       position: absolute;
-      left: var(--switch-x, 50%);
-      top: var(--switch-y, 50%);
+      left: calc(var(--overscan-x) + var(--switch-cx, 50vw));
+      top: calc(var(--overscan-y) + var(--switch-cy, 50vh));
       transform: translate(-50%, -50%);
       width: min(320px, 73.6vw, 67.2svh);
       aspect-ratio: 1290 / 1650;
@@ -64,12 +69,12 @@
   <svg class="switch-filter-defs" aria-hidden="true" width="0" height="0">
     <filter id="switch-deep-red" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
       <feComponentTransfer>
-        <feFuncA type="gamma" amplitude="1" exponent=".16" offset="0"/>
+        <feFuncA type="gamma" amplitude="1" exponent=".08" offset=".12"/>
       </feComponentTransfer>
       <feColorMatrix type="matrix" values="
-        0 0 0 0 .58
-        0 0 0 0 .045
-        0 0 0 0 .105
+        0 0 0 0 .68
+        0 0 0 0 .025
+        0 0 0 0 .055
         0 0 0 1 0"/>
     </filter>
   </svg>
@@ -81,11 +86,20 @@
   </main>
   <script>
     const params = new URLSearchParams(window.location.search);
-    const x = Number(params.get('x'));
-    const y = Number(params.get('y'));
+    const cx = Number(params.get('cx'));
+    const cy = Number(params.get('cy'));
     const root = document.documentElement;
-    if (Number.isFinite(x) && x >= 0 && x <= 1) root.style.setProperty('--switch-x', `${x * 100}%`);
-    if (Number.isFinite(y) && y >= 0 && y <= 1) root.style.setProperty('--switch-y', `${y * 100}%`);
+    if (Number.isFinite(cx)) root.style.setProperty('--switch-cx', `${cx}px`);
+    if (Number.isFinite(cy)) root.style.setProperty('--switch-cy', `${cy}px`);
+
+    requestAnimationFrame(() => {
+      const main = document.querySelector('main');
+      if (!main) return;
+      const styles = getComputedStyle(main);
+      const overscanX = parseFloat(styles.getPropertyValue('--overscan-x')) || 0;
+      const overscanY = parseFloat(styles.getPropertyValue('--overscan-y')) || 0;
+      window.scrollTo({ left: overscanX, top: overscanY, behavior: 'auto' });
+    });
   </script>
 </body>
 </html>
