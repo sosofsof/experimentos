@@ -180,7 +180,7 @@
   position: relative;
   width: min(600px, calc(100% - 2 * var(--text-margin)));
   margin: 0 auto;
-  padding: 3cm 0 max(64px, env(safe-area-inset-bottom));
+  padding: 3cm 0 var(--final-bottom-space, max(64px, env(safe-area-inset-bottom)));
   text-align: center;
   text-align-last: center;
 }
@@ -222,7 +222,8 @@
   height: 100%;
   object-fit: contain;
   pointer-events: none;
-  filter: sepia(.85) saturate(4.2) hue-rotate(316deg) brightness(.58) contrast(1.15);
+  opacity: 1;
+  filter: none;
 }
 .final-switch .switch-key {
   position: absolute;
