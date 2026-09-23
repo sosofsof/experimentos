@@ -5,6 +5,8 @@ export function initializeFinalSwitch(journey: HTMLElement) {
   if (!artwork || !scene) return;
 
   const sceneLabel = scene.getAttribute('aria-label');
+  const themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+  const originalThemeColor = themeColor?.content ?? null;
   const button = document.createElement('button');
   button.type = 'button';
   button.className = 'final-switch';
@@ -34,6 +36,7 @@ export function initializeFinalSwitch(journey: HTMLElement) {
     journey.classList.add('final-blackout-active');
     document.documentElement.classList.add('final-blackout-active');
     document.body.classList.add('final-blackout-active');
+    if (themeColor) themeColor.content = '#000000';
   }
 
   button.addEventListener('click', switchOff);
@@ -43,6 +46,7 @@ export function initializeFinalSwitch(journey: HTMLElement) {
     journey.classList.remove('final-blackout-active');
     document.documentElement.classList.remove('final-blackout-active');
     document.body.classList.remove('final-blackout-active');
+    if (themeColor && originalThemeColor !== null) themeColor.content = originalThemeColor;
     button.replaceWith(artwork);
     scene.classList.replace('scene-switch', 'scene-lace');
     if (sceneLabel !== null) scene.setAttribute('aria-label', sceneLabel);
