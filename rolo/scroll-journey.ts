@@ -81,7 +81,7 @@ function renderVerticalTexts(journey: HTMLElement) {
     secondScene!.style.setProperty('--narrative-height', `${second.scrollHeight + 64}px`);
 
     const journeyBounds = journey.getBoundingClientRect();
-    const switchBounds = lace.getBoundingClientRect();
+    const switchBounds = lace!.getBoundingClientRect();
     const switchCenter = switchBounds.top - journeyBounds.top + journey.scrollTop + switchBounds.height / 2;
     const desiredScrollHeight = switchCenter + journey.clientHeight / 2;
     const baseScrollHeight = journey.scrollHeight - endSpacer.offsetHeight;
