@@ -138,60 +138,46 @@
 }
 
 
-/* Narrative text in the vertical continuation: always occupy the side opposite the fabric. */
-.vertical-text-block {
-  position: absolute;
-  z-index: 9;
+/* Scene-relative text: no viewport coordinates or absolute document offsets. */
+.journey .vertical-installation {
+  position: relative;
+}
+.journey .vertical-installation .scene-left,
+.journey .vertical-installation .scene-right {
+  height: max(100svh, var(--narrative-height, 0px)) !important;
+}
+.journey .vertical-installation .vertical-text-block {
   box-sizing: border-box;
-  margin: 0;
+  z-index: 9;
   color: #3d332a;
-  font-size: clamp(14px, 1.3vw, 20px);
-  line-height: 1.45;
-  text-align: center;
+  font-size: clamp(20px, 2vw, 26px);
+  line-height: 1.5;
+  text-align: left;
   text-wrap: pretty;
+  overflow-wrap: anywhere;
   pointer-events: none;
 }
-
-.vertical-text-block p {
-  margin: 0 0 1em;
-}
-
-.vertical-text-block p:last-child {
-  margin-bottom: 0;
-}
-
+.vertical-text-block p { margin: 0 0 1em; }
+.vertical-text-block p:last-child { margin-bottom: 0; }
 .vertical-text-first,
 .vertical-text-second {
+  position: absolute;
+  top: 50%;
   transform: translateY(-50%);
+  margin: 0;
 }
-
-.vertical-text-after-lace {
-  transform: translateX(-50%);
-  width: min(560px, calc(100vw - 32px));
+.vertical-text-first {
+  left: calc(var(--branch-x, 50%) + var(--work-gap));
+  right: var(--work-margin);
 }
-
-@media (max-width: 700px) {
-  .vertical-text-block {
-    font-size: 13px;
-    line-height: 1.4;
-  }
-
-  .vertical-text-block p {
-    margin-bottom: .8em;
-  }
-
-  .vertical-text-after-lace {
-    width: min(86vw, 460px);
-  }
+.vertical-text-second {
+  left: var(--work-margin);
+  right: calc(100% - var(--branch-x, 50%) + var(--work-gap));
 }
-
-@media (max-height: 600px) {
-  .vertical-text-block {
-    font-size: 12px;
-    line-height: 1.3;
-  }
-
-  .vertical-text-block p {
-    margin-bottom: .65em;
-  }
+.journey .vertical-installation .vertical-text-after-lace {
+  position: relative;
+  width: min(600px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 24px 0 max(64px, env(safe-area-inset-bottom));
+  text-align: center;
 }
