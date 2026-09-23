@@ -239,3 +239,32 @@
   height: 0;
   pointer-events: none;
 }
+
+/* Blackout happens in-place: no navigation, no remount, no position jump. */
+html.final-blackout-active,
+body.final-blackout-active,
+body.final-blackout-active .journey {
+  background: #000 !important;
+}
+
+.journey.final-blackout-active {
+  scrollbar-width: none;
+}
+
+.journey.final-blackout-active::-webkit-scrollbar {
+  display: none;
+}
+
+.journey.final-blackout-active * {
+  visibility: hidden !important;
+}
+
+.journey.final-blackout-active .final-switch,
+.journey.final-blackout-active .final-switch * {
+  visibility: visible !important;
+}
+
+.journey.final-blackout-active .final-switch {
+  z-index: 2147483647;
+  cursor: default;
+}
