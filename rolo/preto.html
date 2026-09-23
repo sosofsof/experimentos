@@ -33,19 +33,13 @@
       min-height: 100%;
       background: #000;
     }
-    .switch-filter-defs {
-      position: fixed;
-      width: 0;
-      height: 0;
-      pointer-events: none;
-    }
     .final-switch {
       position: absolute;
       left: calc(var(--overscan-x) + var(--switch-cx, 50vw));
       top: calc(var(--overscan-y) + var(--switch-cy, 50vh));
       transform: translate(-50%, -50%);
       width: min(320px, 73.6vw, 67.2svh);
-      aspect-ratio: 1290 / 1650;
+      aspect-ratio: 1235 / 1583;
       border: 0;
       padding: 0;
       background: transparent;
@@ -57,33 +51,20 @@
       height: 100%;
       object-fit: contain;
       pointer-events: none;
-      filter: url("#switch-deep-red");
     }
     .final-switch .switch-key {
       position: absolute;
       inset: 0;
-      transform: scaleY(-1);
+      transform: translateY(2.5%) scaleY(-1);
       transform-origin: 50% 44.15152%;
     }
   </style>
 </head>
 <body>
-  <svg class="switch-filter-defs" aria-hidden="true" width="0" height="0">
-    <filter id="switch-deep-red" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
-      <feComponentTransfer>
-        <feFuncA type="gamma" amplitude="1" exponent=".05" offset=".16"/>
-      </feComponentTransfer>
-      <feColorMatrix type="matrix" values="
-        0 0 0 0 .70
-        0 0 0 0 .025
-        0 0 0 0 .060
-        0 0 0 1 0"/>
-    </filter>
-  </svg>
   <main aria-label="Tela preta com o interruptor desligado">
     <div class="final-switch" aria-hidden="true">
-      <img src="./assets/interruptor-moldura.svg" width="1290" height="1650" alt="" draggable="false">
-      <img class="switch-key" src="./assets/interruptor-tecla.svg" width="1290" height="1650" alt="" draggable="false">
+      <img src="./assets/interruptor-moldura.webp" width="1235" height="1583" alt="" draggable="false">
+      <img class="switch-key" src="./assets/interruptor-tecla.webp" width="1235" height="1583" alt="" draggable="false">
     </div>
   </main>
   <script>
