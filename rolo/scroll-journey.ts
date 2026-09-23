@@ -66,20 +66,34 @@ function renderVerticalTexts(journey: HTMLElement) {
   const first = makeTextBlock('vertical-text-first', VERTICAL_TEXT.first);
   const second = makeTextBlock('vertical-text-second', VERTICAL_TEXT.second);
   const afterLace = makeTextBlock('vertical-text-after-lace', VERTICAL_TEXT.afterLace);
+  const endSpacer = document.createElement('div');
+  endSpacer.className = 'vertical-end-spacer';
+  endSpacer.setAttribute('aria-hidden', 'true');
 
   // Each scene owns its text coordinates, just as it owns its textile.
   firstScene.append(first);
   secondScene.append(second);
   // Normal flow reserves real scroll space after the final artwork.
-  vertical.append(afterLace);
+  vertical.append(afterLace, endSpacer);
 
   function fitScenes() {
     firstScene!.style.setProperty('--narrative-height', `${first.scrollHeight + 64}px`);
     secondScene!.style.setProperty('--narrative-height', `${second.scrollHeight + 64}px`);
+
+    const journeyBounds = journey.getBoundingClientRect();
+    const switchBounds = lace!.getBoundingClientRect();
+    const switchCenter = switchBounds.top - journeyBounds.top + journey.scrollTop + switchBounds.height / 2;
+    const desiredScrollHeight = switchCenter + journey.clientHeight / 2;
+    const baseScrollHeight = journey.scrollHeight - endSpacer.offsetHeight;
+    const spacerHeight = Math.max(0, desiredScrollHeight - baseScrollHeight);
+    endSpacer.style.height = `${spacerHeight}px`;
   }
   const resizeObserver = new ResizeObserver(fitScenes);
   resizeObserver.observe(first);
   resizeObserver.observe(second);
+  resizeObserver.observe(afterLace);
+  resizeObserver.observe(lace);
+  resizeObserver.observe(journey);
   fitScenes();
 
   return () => {
@@ -89,6 +103,7 @@ function renderVerticalTexts(journey: HTMLElement) {
     first.remove();
     second.remove();
     afterLace.remove();
+    endSpacer.remove();
   };
 }
 
