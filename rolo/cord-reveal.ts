@@ -20,7 +20,7 @@ export function initializeCordReveal({ journey, track, sequence, experience }: C
   const last = track.querySelector<HTMLElement>('.embroidery[data-order="3"]');
   const cloth = track.querySelector<HTMLElement>('.cloth');
   const heart = vertical?.querySelector<HTMLElement>('.heart-frame');
-  const lace = vertical?.querySelector<HTMLImageElement>('.lace-art');
+  const lace = vertical?.querySelector<HTMLElement>('.final-switch');
   if (!vertical || !source || !last || !cloth || !heart || !lace) return;
 
   const image = getComputedStyle(source).backgroundImage;
