@@ -20,13 +20,15 @@
       overflow: auto;
       -webkit-overflow-scrolling: touch;
       touch-action: pan-x pan-y;
+      scrollbar-width: none;
     }
+    body::-webkit-scrollbar { display: none; }
     main {
       --overscan-x: 16vw;
-      --overscan-y: 18vh;
+      --overscan-y: 18dvh;
       position: relative;
       width: calc(100vw + 2 * var(--overscan-x));
-      height: calc(100vh + 2 * var(--overscan-y));
+      height: calc(100dvh + 2 * var(--overscan-y));
       min-width: 100%;
       min-height: 100%;
       background: #000;
@@ -85,6 +87,7 @@
     </div>
   </main>
   <script>
+    history.scrollRestoration = 'manual';
     const params = new URLSearchParams(window.location.search);
     const cx = Number(params.get('cx'));
     const cy = Number(params.get('cy'));
@@ -98,16 +101,15 @@
       root.style.setProperty('--switch-cy', `${cy + (viewport?.offsetTop ?? 0)}px`);
     }
 
-    requestAnimationFrame(() => {
-      const main = document.querySelector('main');
-      if (!main) return;
+    const main = document.querySelector('main');
+    if (main) {
       const rect = main.getBoundingClientRect();
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
+      const viewportWidth = viewport?.width ?? window.innerWidth;
+      const viewportHeight = viewport?.height ?? window.innerHeight;
       const overscanX = Math.max(0, (rect.width - viewportWidth) / 2);
       const overscanY = Math.max(0, (rect.height - viewportHeight) / 2);
       window.scrollTo({ left: overscanX, top: overscanY, behavior: 'auto' });
-    });
+    }
   </script>
 </body>
 </html>
