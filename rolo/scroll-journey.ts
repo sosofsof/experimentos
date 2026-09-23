@@ -1,3 +1,4 @@
+import { initializeFinalSwitch } from './final-switch';
 import { initializeCordReveal } from './cord-reveal';
 
 type JourneyElements = {
@@ -56,7 +57,7 @@ function renderVerticalTexts(journey: HTMLElement) {
   const vertical = journey.querySelector<HTMLElement>('.vertical-installation');
   const firstScene = vertical?.querySelector<HTMLElement>('.scene-left');
   const secondScene = vertical?.querySelector<HTMLElement>('.scene-right');
-  const lace = vertical?.querySelector<HTMLImageElement>('.lace-art');
+  const lace = vertical?.querySelector<HTMLElement>('.final-switch');
   if (!vertical || !firstScene || !secondScene || !lace) return;
 
   vertical.querySelectorAll('.vertical-text-block').forEach((node) => node.remove());
@@ -281,6 +282,7 @@ export function initializeScrollJourney({ journey, track, onComplete }: JourneyE
 
   measure();
   track.removeAttribute('aria-describedby');
+  const cleanupFinalSwitch = initializeFinalSwitch(journey);
   const cleanupCord = initializeCordReveal({ journey, track, sequence, experience });
   const cleanupVerticalTexts = renderVerticalTexts(journey);
   track.focus({ preventScroll: true });
@@ -289,6 +291,7 @@ export function initializeScrollJourney({ journey, track, onComplete }: JourneyE
     observer.disconnect();
     cleanupCord?.();
     cleanupVerticalTexts?.();
+    cleanupFinalSwitch?.();
     captionStage.querySelector('.embroidery-caption-layer')?.remove();
     cancelAnimationFrame(frame);
     journey.removeEventListener('scroll', scheduleUpdate);
