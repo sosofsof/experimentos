@@ -35,7 +35,9 @@ const VERTICAL_TEXT = {
     'Então eu crio também os pesadelos que eu queria que fossem reais.',
   ],
   second: [
-    'Talvez meu corpo precise ser meu antes que eu possa controlar todos os parasitas. Eu não sei se essa parte é possível. Será que meu corpo pode ser meu só porque eu quero que seja? Eu não sei se foi isso que Deus planejou quando criou o homem e a mulher.',
+    'Talvez meu corpo precise ser meu antes que eu possa controlar todos os parasitas.',
+    'Eu não sei se essa parte é possível. Será que meu corpo pode ser meu só porque eu quero que seja?',
+    'Eu não sei se foi isso que Deus planejou quando criou o homem e a mulher.',
   ],
   afterLace: [
     'Se Deus medisse o desejo, meu corpo já seria meu, e de noite eu só veria preto, e de dia eu andaria com calma.',
