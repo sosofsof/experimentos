@@ -206,7 +206,7 @@
   top: auto;
   transform: translateX(-50%);
   width: min(320px, 73.6vw, 67.2svh);
-  aspect-ratio: 1290 / 1650;
+  aspect-ratio: 1235 / 1583;
   margin: 0;
   padding: 0;
   border: 0;
@@ -222,15 +222,14 @@
   height: 100%;
   object-fit: contain;
   pointer-events: none;
-  filter: url("#switch-deep-red");
 }
 .final-switch .switch-key {
   position: absolute;
   inset: 0;
   transform-origin: 50% 44.15152%;
-  transition: transform 240ms cubic-bezier(.5, 0, .25, 1);
+  transition: transform 280ms cubic-bezier(.55, .02, .25, 1);
 }
-.final-switch.is-off .switch-key { transform: scaleY(-1); }
+.final-switch.is-off .switch-key { transform: translateY(2.5%) scaleY(-1); }
 @media (prefers-reduced-motion: reduce) {
   .final-switch .switch-key { transition: none; }
 }
