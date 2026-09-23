@@ -141,6 +141,7 @@
 /* Scene-relative text: no viewport coordinates or absolute document offsets. */
 .journey .vertical-installation {
   position: relative;
+  --text-margin: clamp(24px, 4vw, 56px);
 }
 .journey .vertical-installation .scene-left,
 .journey .vertical-installation .scene-right {
@@ -150,9 +151,10 @@
   box-sizing: border-box;
   z-index: 9;
   color: #3d332a;
-  font-size: clamp(20px, 2vw, 26px);
+  font-size: clamp(14px, 1.25vw, 19px);
   line-height: 1.5;
-  text-align: left;
+  text-align: justify;
+  text-align-last: start;
   text-wrap: pretty;
   overflow-wrap: anywhere;
   pointer-events: none;
@@ -167,17 +169,24 @@
   margin: 0;
 }
 .vertical-text-first {
-  left: calc(var(--branch-x, 50%) + var(--work-gap));
-  right: var(--work-margin);
+  left: calc(var(--branch-x, 50%) + var(--text-margin));
+  right: var(--text-margin);
 }
 .vertical-text-second {
-  left: var(--work-margin);
-  right: calc(100% - var(--branch-x, 50%) + var(--work-gap));
+  left: var(--text-margin);
+  right: calc(100% - var(--branch-x, 50%) + var(--text-margin));
 }
 .journey .vertical-installation .vertical-text-after-lace {
   position: relative;
-  width: min(600px, calc(100% - 40px));
+  width: min(600px, calc(100% - 2 * var(--text-margin)));
   margin: 0 auto;
   padding: 24px 0 max(64px, env(safe-area-inset-bottom));
-  text-align: center;
+  text-align: justify;
+}
+
+/* Match the horizontal captions on narrow and short viewports as well. */
+@media (max-width: 700px), (max-height: 600px) {
+  .journey .vertical-installation .vertical-text-block {
+    font-size: 14px;
+  }
 }
