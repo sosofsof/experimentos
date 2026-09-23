@@ -54,11 +54,14 @@ export function initializeFinalSwitch(journey: HTMLElement) {
   }
   function switchOff() {
     const bounds = button!.getBoundingClientRect();
-    const viewportWidth = Math.max(1, document.documentElement.clientWidth);
-    const viewportHeight = Math.max(1, document.documentElement.clientHeight);
+    const viewport = window.visualViewport;
+    const viewportLeft = viewport?.offsetLeft ?? 0;
+    const viewportTop = viewport?.offsetTop ?? 0;
+    const centerX = bounds.left + bounds.width / 2 - viewportLeft;
+    const centerY = bounds.top + bounds.height / 2 - viewportTop;
     const target = new URL('./preto.html', window.location.href);
-    target.searchParams.set('x', ((bounds.left + bounds.width / 2) / viewportWidth).toFixed(6));
-    target.searchParams.set('y', ((bounds.top + bounds.height / 2) / viewportHeight).toFixed(6));
+    target.searchParams.set('cx', centerX.toFixed(2));
+    target.searchParams.set('cy', centerY.toFixed(2));
 
     button!.disabled = true;
     button!.classList.add('is-off');
