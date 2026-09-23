@@ -37,7 +37,7 @@
       left: var(--switch-x, 50%);
       top: var(--switch-y, 50%);
       transform: translate(-50%, -50%);
-      width: min(400px, 92vw, 84svh);
+      width: min(320px, 73.6vw, 67.2svh);
       aspect-ratio: 1290 / 1650;
       border: 0;
       padding: 0;
@@ -64,12 +64,12 @@
   <svg class="switch-filter-defs" aria-hidden="true" width="0" height="0">
     <filter id="switch-deep-red" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
       <feComponentTransfer>
-        <feFuncA type="gamma" amplitude="1" exponent=".32" offset="0"/>
+        <feFuncA type="gamma" amplitude="1" exponent=".16" offset="0"/>
       </feComponentTransfer>
       <feColorMatrix type="matrix" values="
-        0 0 0 0 .435
-        0 0 0 0 .075
-        0 0 0 0 .125
+        0 0 0 0 .58
+        0 0 0 0 .045
+        0 0 0 0 .105
         0 0 0 1 0"/>
     </filter>
   </svg>
