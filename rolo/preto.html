@@ -21,14 +21,16 @@
       touch-action: none;
     }
     main {
-      display: grid;
-      place-items: center;
+      position: relative;
       width: 100%;
       height: 100%;
       background: #000;
     }
     .final-switch {
-      position: relative;
+      position: absolute;
+      left: var(--switch-x, 50%);
+      top: var(--switch-y, 50%);
+      transform: translate(-50%, -50%);
       width: min(400px, 92vw, 84svh);
       aspect-ratio: 1290 / 1650;
       border: 0;
@@ -42,7 +44,8 @@
       height: 100%;
       object-fit: contain;
       pointer-events: none;
-      filter: sepia(.85) saturate(4.2) hue-rotate(316deg) brightness(.58) contrast(1.15);
+      opacity: 1;
+      filter: none;
     }
     .final-switch .switch-key {
       position: absolute;
@@ -59,5 +62,23 @@
       <img class="switch-key" src="./assets/interruptor-tecla.svg" width="1290" height="1650" alt="" draggable="false">
     </div>
   </main>
+  <script>
+    (() => {
+      let position = null;
+      try {
+        position = JSON.parse(sessionStorage.getItem('rolo-final-switch-position') || 'null');
+      } catch {
+        position = null;
+      }
+      if (!position || !Number.isFinite(position.x) || !Number.isFinite(position.y)) return;
+
+      const placeSwitch = () => {
+        document.documentElement.style.setProperty('--switch-x', `${position.x * window.innerWidth}px`);
+        document.documentElement.style.setProperty('--switch-y', `${position.y * window.innerHeight}px`);
+      };
+      placeSwitch();
+      window.addEventListener('resize', placeSwitch, { passive: true });
+    })();
+  </script>
 </body>
 </html>
