@@ -59,57 +59,30 @@ function renderVerticalTexts(journey: HTMLElement) {
   const lace = vertical?.querySelector<HTMLImageElement>('.lace-art');
   if (!vertical || !firstScene || !secondScene || !lace) return;
 
-  const verticalElement = vertical;
-  const firstSceneElement = firstScene;
-  const secondSceneElement = secondScene;
-  const laceElement = lace;
-
-  verticalElement.querySelectorAll('.vertical-text-block').forEach((node) => node.remove());
-
+  vertical.querySelectorAll('.vertical-text-block').forEach((node) => node.remove());
   const first = makeTextBlock('vertical-text-first', VERTICAL_TEXT.first);
   const second = makeTextBlock('vertical-text-second', VERTICAL_TEXT.second);
   const afterLace = makeTextBlock('vertical-text-after-lace', VERTICAL_TEXT.afterLace);
-  verticalElement.append(first, second, afterLace);
 
-  function place() {
-    const verticalBounds = verticalElement.getBoundingClientRect();
-    const firstBounds = firstSceneElement.getBoundingClientRect();
-    const secondBounds = secondSceneElement.getBoundingClientRect();
-    const laceBounds = laceElement.getBoundingClientRect();
-    const branchValue = Number.parseFloat(getComputedStyle(verticalElement).getPropertyValue('--branch-x'));
-    const branchX = Number.isFinite(branchValue) ? branchValue : verticalBounds.width / 2;
-    const gap = Math.max(12, Math.min(28, verticalBounds.width * 0.02));
-    const margin = 12;
+  // Each scene owns its text coordinates, just as it owns its textile.
+  firstScene.append(first);
+  secondScene.append(second);
+  // Normal flow reserves real scroll space after the final artwork.
+  vertical.append(afterLace);
 
-    Object.assign(first.style, {
-      left: `${branchX + gap}px`,
-      top: `${firstBounds.top - verticalBounds.top + firstBounds.height / 2}px`,
-      width: `${Math.max(120, verticalBounds.width - branchX - gap - margin)}px`,
-    });
-    Object.assign(second.style, {
-      left: `${margin}px`,
-      top: `${secondBounds.top - verticalBounds.top + secondBounds.height / 2}px`,
-      width: `${Math.max(120, branchX - gap - margin)}px`,
-    });
-    Object.assign(afterLace.style, {
-      left: `${laceBounds.left - verticalBounds.left + laceBounds.width / 2}px`,
-      top: `${laceBounds.bottom - verticalBounds.top + 18}px`,
-    });
+  function fitScenes() {
+    firstScene!.style.setProperty('--narrative-height', `${first.scrollHeight + 64}px`);
+    secondScene!.style.setProperty('--narrative-height', `${second.scrollHeight + 64}px`);
   }
-
-  const resizeObserver = new ResizeObserver(place);
-  for (const element of [verticalElement, firstSceneElement, secondSceneElement, laceElement]) {
-    resizeObserver.observe(element);
-  }
-  const styleObserver = new MutationObserver(place);
-  styleObserver.observe(verticalElement, { attributes: true, attributeFilter: ['style'] });
-  laceElement.addEventListener('load', place);
-  place();
+  const resizeObserver = new ResizeObserver(fitScenes);
+  resizeObserver.observe(first);
+  resizeObserver.observe(second);
+  fitScenes();
 
   return () => {
     resizeObserver.disconnect();
-    styleObserver.disconnect();
-    laceElement.removeEventListener('load', place);
+    firstScene.style.removeProperty('--narrative-height');
+    secondScene.style.removeProperty('--narrative-height');
     first.remove();
     second.remove();
     afterLace.remove();
