@@ -11,12 +11,12 @@ function ensureSwitchFilter() {
   svg.innerHTML = `
     <filter id="${SWITCH_FILTER_ID}" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
       <feComponentTransfer>
-        <feFuncA type="gamma" amplitude="1" exponent=".32" offset="0"/>
+        <feFuncA type="gamma" amplitude="1" exponent=".16" offset="0"/>
       </feComponentTransfer>
       <feColorMatrix type="matrix" values="
-        0 0 0 0 .435
-        0 0 0 0 .075
-        0 0 0 0 .125
+        0 0 0 0 .58
+        0 0 0 0 .045
+        0 0 0 0 .105
         0 0 0 1 0"/>
     </filter>`;
   document.body.append(svg);
