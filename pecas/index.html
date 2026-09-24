@@ -27,7 +27,7 @@
   <a class="site-navigation__link" href="../index.html" data-site-back><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m10 5-7 7 7 7M3 12h18"/></svg>Voltar</a>
   <a class="site-navigation__link" href="../index.html" aria-label="Voltar à página inicial"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m3 10 9-7 9 7v11h-7v-7h-4v7H3Z"/></svg>Página inicial</a>
 </nav>
-<aside aria-label="Peças disponíveis"><div class="background-control"><label for="background">Fundo da obra</label><select id="background"><option value="branco">Branco liso</option><option value="preto">Preto liso</option><option value="tecido">Tecido</option></select></div><nav aria-label="Categorias"><button class="tab active" data-kind="retalho" aria-pressed="true">Retalhos</button><button class="tab" data-kind="caco" aria-pressed="false">Cacos</button><button class="tab" data-kind="letra" aria-pressed="false">Letras</button></nav><div id="catalog" aria-label="Catálogo de peças"></div></aside><main><div class="gallery-entry"><a href="./galeria.html" target="_blank" rel="noopener">visitar a galeria ↗</a></div><div id="workspace"><div id="artwork"><canvas id="canvas" tabindex="0" aria-label="Área de composição. Enter seleciona a próxima peça. Use as setas para mover, mais e menos para redimensionar, colchetes para girar, Ctrl ou Command + D para duplicar e Delete para remover. Escape cancela o gesto."></canvas><p id="empty">Coloque suas peças aqui.</p><div id="selection" hidden>
+<aside aria-label="Peças disponíveis"><div class="background-control"><label for="background">Fundo da obra</label><select id="background"><option value="branco">Branco liso</option><option value="preto">Preto liso</option><option value="tecido" selected>Tecido</option></select></div><nav aria-label="Categorias"><button class="tab active" data-kind="retalho" aria-pressed="true">Retalhos</button><button class="tab" data-kind="caco" aria-pressed="false">Cacos</button><button class="tab" data-kind="letra" aria-pressed="false">Letras</button></nav><div id="catalog" aria-label="Catálogo de peças"></div></aside><main><div class="gallery-entry"><a href="./galeria.html" target="_blank" rel="noopener">visitar a galeria ↗</a></div><div id="workspace"><div id="artwork"><canvas id="canvas" tabindex="0" aria-label="Área de composição. Enter seleciona a próxima peça. Use as setas para mover, mais e menos para redimensionar, colchetes para girar, Ctrl ou Command + D para duplicar e Delete para remover. Escape cancela o gesto."></canvas><p id="empty">Coloque suas peças aqui.</p><div id="selection" hidden>
   <button id="resize-handle" type="button" aria-label="Arraste para redimensionar a peça" title="Arraste para redimensionar">↔</button>
   <button id="rotate-handle" type="button" aria-label="Arraste para girar a peça" title="Arraste para girar">↻</button>
   <button id="duplicate-handle" type="button" aria-label="Duplicar peça selecionada" title="Duplicar peça (Ctrl ou Command + D)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false"><rect x="8" y="8" width="12" height="12" rx="1.5"/><path d="M15 8V4H4v11h4"/></svg></button>
@@ -46,12 +46,16 @@
   <p id="publish-feedback" role="status" aria-live="polite"></p>
   <div id="publish-success" hidden>
     <h2 id="success-heading" tabindex="-1">Sua peça está na galeria!</h2>
-    <label for="public-link">Link público para compartilhar</label>
-    <input id="public-link" type="url" readonly>
-    <div class="dialog-actions"><button id="copy-public-link" type="button" class="outlined">copiar link</button><a id="view-published" target="_blank" rel="noopener">ver peça ↗</a></div>
-    <p id="share-feedback" role="status"></p>
-    <p id="ownership-note" class="small-note"></p>
-    <button id="save-private-link" type="button" class="outlined">salvar acesso privado de exclusão</button>
-    <p class="small-note">Guarde esse arquivo só para você. Quem tiver o acesso privado poderá retirar a peça da galeria. Sem cadastro, ele não pode ser recuperado.</p>
+    <a id="view-published" class="gallery-primary" href="./galeria.html" target="_blank" rel="noopener">abrir a galeria ↗</a>
+    <details class="publication-options">
+      <summary>compartilhar ou guardar acesso</summary>
+      <label for="public-link">Link da sua peça</label>
+      <input id="public-link" type="url" readonly>
+      <div class="dialog-actions"><button id="copy-public-link" type="button" class="outlined">copiar link</button></div>
+      <p id="share-feedback" role="status"></p>
+      <p id="ownership-note" class="small-note"></p>
+      <button id="save-private-link" type="button" class="outlined">guardar acesso para retirar a peça</button>
+      <p class="small-note">Só você deve guardar esse arquivo. Ele permite retirar a peça e não pode ser recuperado.</p>
+    </details>
   </div>
 </dialog><div id="ghost" aria-hidden="true"></div><p id="status" class="sr" role="status"></p><script src="./assets/v2/catalog.js"></script><script src="./generated/render.js"></script><script src="./editor.js"></script><script src="./generated/publication.js"></script></body></html>

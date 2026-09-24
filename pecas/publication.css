@@ -23,3 +23,8 @@
 #publish-feedback { margin: 16px 0 0; }
 [hidden] { display: none !important; }
 @media (max-width: 650px) { .gallery-entry { padding: 12px 14px 0; } .publication-dialog { padding: 18px; } }
+
+.gallery-primary { display: block; margin: 24px 0; padding: 16px 20px; min-height: 52px; border: 2px solid #000; border-radius: 3px 6px 4px 5px; background: #000; color: #fff; text-align: center; text-decoration: none; font-size: 20px; }
+.gallery-primary:hover { background: #fff; color: #000; }
+.publication-options { border-top: 1px solid #000; padding-top: 16px; }
+.publication-options summary { cursor: pointer; min-height: 44px; font-size: 14px; }

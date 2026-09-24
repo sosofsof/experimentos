@@ -9,7 +9,7 @@ const duplicate=document.getElementById('duplicate-handle');
 const placed=[],images=new Map(),masks=new Map(),touchPoints=new Map();let selected=null,drag=null,pinch=null,category='retalho',W=1,H=1,exporting=false;
 
 const backgroundSelect=document.getElementById('background');
-let background='branco';const backgroundImages=new Map();
+let background=backgroundSelect.value;const backgroundImages=new Map();
 for(const [id,src] of Object.entries(window.ARTWORK_BACKGROUNDS)){const im=new Image();im.onload=()=>draw();im.src=src;backgroundImages.set(id,im);}
 backgroundSelect.addEventListener('change',()=>{background=backgroundSelect.value;draw();});
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
