@@ -44,6 +44,8 @@ function setBusy(value: boolean): void {
 }
 async function showPublication(recipe: Recipe, recovering = false): Promise<void> {
   snapshot = recipe; form.hidden = false; success.hidden = true;
+  element('share-feedback', HTMLParagraphElement).textContent = '';
+  success.querySelector('details')?.removeAttribute('open');
   feedback.textContent = recovering ? 'Um envio anterior ficou sem confirmação. Confira a prévia e tente novamente; a mesma peça não será duplicada.' : '';
   element('public-consent', HTMLInputElement).checked = false;
   dialog.showModal(); setBusy(true);
@@ -83,9 +85,10 @@ form.addEventListener('submit', async event => {
     privateLink = publicLink.value + '#excluir=' + pending.deleteToken;
     const remembered = rememberOwner(artwork.id, pending.deleteToken);
     element('ownership-note', HTMLParagraphElement).textContent = remembered
-      ? 'Você pode retirar a peça usando este navegador. Guarde também o acesso privado para usar em outro dispositivo.'
-      : 'Este navegador não guardou seu acesso. Salve o acesso privado abaixo para poder retirar a peça depois.';
-    element('view-published', HTMLAnchorElement).href = publicLink.value;
+      ? 'Você pode retirar a peça neste navegador ou guardar o acesso para outro dispositivo.'
+      : 'Guarde o acesso abaixo para poder retirar a peça depois.';
+    element('view-published', HTMLAnchorElement).href = new URL('./galeria.html', location.href).href;
+    if (!remembered) success.querySelector('details')?.setAttribute('open', '');
     form.hidden = true; success.hidden = false;
     element('success-heading', HTMLHeadingElement).focus();
     pending = null; savePending(null);
