@@ -13,12 +13,13 @@ export function initializeFinalSwitch(journey: HTMLElement) {
   button.setAttribute('aria-label', 'Apagar a luz');
   button.setAttribute('aria-pressed', 'false');
 
-  for (const [className, filename] of [['switch-frame', 'interruptor-moldura'], ['switch-key', 'interruptor-tecla']]) {
+  // Both layers share one download; CSS isolates the frame and the moving key.
+  for (const className of ['switch-frame', 'switch-key']) {
     const image = document.createElement('img');
     image.className = className;
-    image.src = new URL(`./assets/${filename}.webp`, window.location.href).href;
-    image.width = 1235;
-    image.height = 1583;
+    image.src = new URL('./assets/interruptor-desenho.webp', window.location.href).href;
+    image.width = 1239;
+    image.height = 1269;
     image.alt = '';
     image.draggable = false;
     button.append(image);
@@ -30,23 +31,23 @@ export function initializeFinalSwitch(journey: HTMLElement) {
 
   let isOff = false;
 
-  function switchOff() {
-    if (isOff) return;
-    isOff = true;
+  function toggleLight() {
+    isOff = !isOff;
 
     // Keep this exact DOM node and its current layout position. Only the page state changes.
-    button.setAttribute('aria-pressed', 'true');
-    button.classList.add('is-off');
-    journey.classList.add('final-blackout-active');
-    document.documentElement.classList.add('final-blackout-active');
-    document.body.classList.add('final-blackout-active');
-    if (themeColor) themeColor.content = '#000000';
+    button.setAttribute('aria-pressed', String(isOff));
+    button.setAttribute('aria-label', isOff ? 'Acender a luz' : 'Apagar a luz');
+    button.classList.toggle('is-off', isOff);
+    journey.classList.toggle('final-blackout-active', isOff);
+    document.documentElement.classList.toggle('final-blackout-active', isOff);
+    document.body.classList.toggle('final-blackout-active', isOff);
+    if (themeColor) themeColor.content = isOff ? '#000000' : (originalThemeColor ?? '');
   }
 
-  button.addEventListener('click', switchOff);
+  button.addEventListener('click', toggleLight);
 
   return () => {
-    button.removeEventListener('click', switchOff);
+    button.removeEventListener('click', toggleLight);
     journey.classList.remove('final-blackout-active');
     document.documentElement.classList.remove('final-blackout-active');
     document.body.classList.remove('final-blackout-active');
