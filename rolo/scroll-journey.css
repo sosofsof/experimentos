@@ -206,7 +206,7 @@
   top: auto;
   transform: translateX(-50%);
   width: min(320px, 73.6vw, 67.2svh);
-  aspect-ratio: 1235 / 1583;
+  aspect-ratio: 760 / 1020;
   margin: 0;
   padding: 0;
   border: 0;
@@ -217,20 +217,27 @@
 }
 .final-switch:focus-visible { outline: 2px dashed #7a1f2a; outline-offset: 8px; }
 .final-switch img {
+  position: absolute;
   display: block;
-  width: 100%;
-  height: 100%;
+  /* Present the original drawing's frame at the existing 320px width.
+     Crop only empty canvas through positioning, without resampling the asset. */
+  width: 163.026316%;
+  max-width: none;
+  height: 124.411765%;
+  left: -23.684211%;
+  top: -9.803922%;
   object-fit: contain;
   pointer-events: none;
-  filter: brightness(.84);
+}
+.final-switch .switch-frame {
+  clip-path: polygon(evenodd, 0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, 26% 17%, 67% 17%, 67% 78%, 26% 78%, 26% 17%);
 }
 .final-switch .switch-key {
-  position: absolute;
-  inset: 0;
-  transform-origin: 50% 44.15152%;
+  clip-path: inset(22% 37% 37% 32%);
+  transform-origin: 50% 42.5%;
   transition: transform 280ms cubic-bezier(.55, .02, .25, 1);
 }
-.final-switch.is-off .switch-key { transform: translateY(2.5%) scaleY(-1); }
+.final-switch.is-off .switch-key { transform: scaleY(-1); }
 @media (prefers-reduced-motion: reduce) {
   .final-switch .switch-key { transition: none; }
 }
@@ -266,6 +273,5 @@ body.final-blackout-active .journey {
 
 .journey.final-blackout-active .final-switch {
   z-index: 2147483647;
-  cursor: default;
-  pointer-events: none;
+  cursor: pointer;
 }
