@@ -18,29 +18,29 @@ type DragPosition = {
 const END_TOLERANCE = 1;
 
 const EMBROIDERY_CAPTIONS = new Map([
-  ['2', 'Tinha alguma coisa dentro de mim.'],
-  ['6', 'Eu sonhava acordada em arrancar aquilo com minhas mãos.'],
-  ['5', 'Eu respirava com a ideia do sangue caindo no chão,'],
-  ['4', 'de não ter mais nada crescendo na minha barriga.'],
-  ['7', 'De noite, eram sempre pesadelos — eu via, escutava, sentia.'],
-  ['8', 'De manhã, os pesadelos voltavam para a minha barriga, silenciosos e escondidos.'],
-  ['1', 'Mas eu ainda os sentia, apertando meu estômago, meu coração, meu intestino, cada cantinho.'],
+  ['2', 'texto aqui texto aqui texto aqui...'],
+  ['6', 'texto aqui texto aqui texto aqui texto aqui texto aqui...'],
+  ['5', 'texto aqui texto aqui texto aqui texto aqui...'],
+  ['4', 'texto aqui texto aqui texto aqui texto aqui...'],
+  ['7', 'texto aqui texto aqui texto aqui texto aqui texto aqui...'],
+  ['8', 'texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui...'],
+  ['1', 'texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui...'],
 ]);
 
 const VERTICAL_TEXT = {
   first: [
-    'Então eu tentei trazê-los à vida. Eu tento. Talvez, se eu criar meus próprios pesadelos de dia, os que moram na minha barriga precisem descansar de noite.',
-    'Talvez, se eu criar minhas próprias orações, eles vão embora para sempre.',
-    'Mas não há muito que eu possa fazer pelos pesadelos que vivem no mundo.',
-    'Então eu crio também os pesadelos que eu queria que fossem reais.',
+    'texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui...',
+    'texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui...',
+    'texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui...',
+    'texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui...',
   ],
   second: [
-    'Talvez meu corpo precise ser meu antes que eu possa controlar todos os parasitas.',
-    'Eu não sei se essa parte é possível. Será que meu corpo pode ser meu só porque eu quero que seja?',
-    'Eu não sei se foi isso que Deus planejou quando criou o homem e a mulher.',
+    'texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui...',
+    'texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui...',
+    'texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui...',
   ],
   afterLace: [
-    'Se Deus medisse o desejo, meu corpo já seria meu, e de noite eu só veria preto, e de dia eu andaria com calma.',
+    'texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui...',
   ],
 } as const;
 
