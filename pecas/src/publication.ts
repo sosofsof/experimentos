@@ -87,7 +87,7 @@ form.addEventListener('submit', async event => {
     element('ownership-note', HTMLParagraphElement).textContent = remembered
       ? 'Você pode retirar a peça neste navegador ou guardar o acesso para outro dispositivo.'
       : 'Guarde o acesso abaixo para poder retirar a peça depois.';
-    element('view-published', HTMLAnchorElement).href = new URL('./galeria.html', location.href).href;
+    element('view-published', HTMLAnchorElement).href = new URL('./galeria.html?rev=20260930b', location.href).href;
     if (!remembered) success.querySelector('details')?.setAttribute('open', '');
     form.hidden = true; success.hidden = false;
     element('success-heading', HTMLHeadingElement).focus();
