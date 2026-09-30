@@ -36,19 +36,19 @@ jobs:
           targets = {
               "IMG_2972_retalho_05": {
                   "mask_file": ".tmp-retalho-mask-05.b64",
-                  "rgba_sha256": "f5844d69072e1e744d3112cc0f4e02f5458f31a420b4cbc1c84a3bddb289b28a",
+                  "rgba_sha256": "6d184ba62e134bfd6a9f545150151e3df60f852bb9160dfacaebad0e999dcffd",
               },
               "IMG_2972_retalho_10": {
                   "mask_file": ".tmp-retalho-mask-10.b64",
-                  "rgba_sha256": "7d9a4fffc6500e0113aec54384846daf8135d35fa9c76e48c34a41a5a7c7a2cd",
+                  "rgba_sha256": "0461e69f66e5424d00753e77f84283610b8c4aaba4f4bb600464cbfabdebbf40",
               },
               "IMG_2972_retalho_11": {
                   "mask_file": ".tmp-retalho-mask-11.b64",
-                  "rgba_sha256": "cb2bc3e8b165ba895f23862ce76fbfe14425e46e1497b8940f780458d22b86e2",
+                  "rgba_sha256": "0a155cbc1f0c02afffbc0cbb090028fb9e99497de7afcbc94f2f73efbfbc45ea",
               },
               "IMG_2972_retalho_12": {
                   "mask_file": ".tmp-retalho-mask-12.b64",
-                  "rgba_sha256": "78996eebe4f5cdb2fb1268e52ac40fba72d0ba3d6eba2ace0ad48329722c199f",
+                  "rgba_sha256": "7a9aaac44b131c9d9b51a3d7265afee0472d6c705b6133d34d46e7a9f9af56d3",
               },
           }
 
@@ -89,6 +89,12 @@ jobs:
                   for i in range(start, end):
                       off = i * 4
                       rgba[off:off+4] = b"\x00\x00\x00\x00"
+
+              # Normalize fully transparent pixels: hidden RGB does not affect
+              # appearance, and different PNG/WebP encoders may preserve it differently.
+              for i in range(0, len(rgba), 4):
+                  if rgba[i + 3] == 0:
+                      rgba[i:i+4] = b"\\x00\\x00\\x00\\x00"
 
               clean = Image.frombytes("RGBA", im.size, bytes(rgba))
               digest = hashlib.sha256(clean.tobytes()).hexdigest()
