@@ -1,4 +1,4 @@
-name: Instalar retalhos aprovados uma vez
+name: Aplicar transparência aprovada aos quatro retalhos
 
 on:
   push:
@@ -8,8 +8,8 @@ permissions:
   contents: write
 
 jobs:
-  install:
-    if: contains(github.event.head_commit.message, '[install-exact-retalhos]')
+  apply:
+    if: contains(github.event.head_commit.message, '[install-alpha-retalhos]')
     runs-on: ubuntu-24.04
     steps:
       - name: Obter repositório
@@ -25,7 +25,7 @@ jobs:
       - name: Instalar Pillow
         run: python -m pip install --disable-pip-version-check Pillow
 
-      - name: Reproduzir exatamente os quatro PNGs aprovados
+      - name: Aplicar alpha exato, gerar WebP lossless e atualizar catálogo
         shell: bash
         run: |
           python - <<'PY'
@@ -34,30 +34,14 @@ jobs:
           import base64, hashlib, json, re, zlib
 
           targets = {
-              "IMG_2972_retalho_05": {
-                  "mask_file": ".tmp-retalho-mask-05.b64",
-                  "rgba_sha256": "6d184ba62e134bfd6a9f545150151e3df60f852bb9160dfacaebad0e999dcffd",
-              },
-              "IMG_2972_retalho_10": {
-                  "mask_file": ".tmp-retalho-mask-10.b64",
-                  "rgba_sha256": "0461e69f66e5424d00753e77f84283610b8c4aaba4f4bb600464cbfabdebbf40",
-              },
-              "IMG_2972_retalho_11": {
-                  "mask_file": ".tmp-retalho-mask-11.b64",
-                  "rgba_sha256": "0a155cbc1f0c02afffbc0cbb090028fb9e99497de7afcbc94f2f73efbfbc45ea",
-              },
-              "IMG_2972_retalho_12": {
-                  "mask_file": ".tmp-retalho-mask-12.b64",
-                  "rgba_sha256": "7a9aaac44b131c9d9b51a3d7265afee0472d6c705b6133d34d46e7a9f9af56d3",
-              },
+              "IMG_2972_retalho_05": (".tmp-alpha-05.b64", "8d7e0dcfdfe138c1e84dbb0d373c1422797893674b4431b122b21f59a8cb59cb"),
+              "IMG_2972_retalho_10": (".tmp-alpha-10.b64", "931bd023d6dbce09f3e768069359423285c92047206d55c23745b487508c2fca"),
+              "IMG_2972_retalho_11": (".tmp-alpha-11.b64", "539e6ba58df9033687c228460d7c3b3a344cc4d5ea3e17211669c24e03cdac35"),
+              "IMG_2972_retalho_12": (".tmp-alpha-12.b64", "0e24ef16a2db4b0156e3aecebb646e9eb3c194a0ae78934b16aec929839f20d8"),
           }
 
           out_dir = Path("pecas/assets/v8")
           out_dir.mkdir(parents=True, exist_ok=True)
-
-          def decode_ranges(path):
-              data = base64.b64decode(Path(path).read_text(encoding="utf-8").strip())
-              return json.loads(zlib.decompress(data).decode("utf-8"))
 
           def make_catalog_mask(im):
               w, h = im.size
@@ -75,49 +59,38 @@ jobs:
                       packed[i >> 3] |= 1 << (i & 7)
               return mw, mh, base64.b64encode(bytes(packed)).decode("ascii")
 
-          catalog_masks = {}
-          for stem, cfg in targets.items():
+          masks = {}
+          for stem, (alpha_file, expected_alpha_hash) in targets.items():
               src = Path("pecas/assets/v7") / f"{stem}.webp"
               im = Image.open(src).convert("RGBA")
-              rgba = bytearray(im.tobytes())
-              pixels = im.width * im.height
+              alpha = zlib.decompress(base64.b64decode(Path(alpha_file).read_text(encoding="utf-8").strip()))
+              if len(alpha) != im.width * im.height:
+                  raise SystemExit(f"Alpha com tamanho incorreto em {stem}")
+              digest = hashlib.sha256(alpha).hexdigest()
+              if digest != expected_alpha_hash:
+                  raise SystemExit(f"Alpha transportado não confere em {stem}: {digest}")
 
-              for start, length in decode_ranges(cfg["mask_file"]):
-                  end = start + length
-                  if start < 0 or end > pixels:
-                      raise SystemExit(f"Máscara inválida para {stem}: {start}:{end}")
-                  for i in range(start, end):
-                      off = i * 4
-                      rgba[off:off+4] = b"\x00\x00\x00\x00"
-
-              # Normalize fully transparent pixels: hidden RGB does not affect
-              # appearance, and different PNG/WebP encoders may preserve it differently.
-              for i in range(0, len(rgba), 4):
-                  if rgba[i + 3] == 0:
-                      rgba[i:i+4] = b"\\x00\\x00\\x00\\x00"
-
-              clean = Image.frombytes("RGBA", im.size, bytes(rgba))
-              digest = hashlib.sha256(clean.tobytes()).hexdigest()
-              if digest != cfg["rgba_sha256"]:
-                  raise SystemExit(f"RGBA de {stem} não bate com o PNG aprovado: {digest}")
-
+              r, g, b, _ = im.split()
+              clean = Image.merge("RGBA", (r, g, b, Image.frombytes("L", im.size, alpha)))
               out = out_dir / f"{stem}.webp"
               clean.save(out, "WEBP", lossless=True, quality=100, method=6, exact=True)
+
               check = Image.open(out).convert("RGBA")
               if check.size != im.size:
                   raise SystemExit(f"Resolução alterada em {stem}: {im.size} -> {check.size}")
-              digest2 = hashlib.sha256(check.tobytes()).hexdigest()
-              if digest2 != cfg["rgba_sha256"]:
-                  raise SystemExit(f"WebP final de {stem} não preservou os pixels aprovados")
+              check_alpha = hashlib.sha256(check.getchannel("A").tobytes()).hexdigest()
+              if check_alpha != expected_alpha_hash:
+                  raise SystemExit(f"WebP final não preservou o alpha aprovado em {stem}")
 
-              mw, mh, mask = make_catalog_mask(check)
-              catalog_masks[stem] = (mw, mh, mask)
-              print(stem, im.size, digest2)
+              masks[stem] = make_catalog_mask(check)
+              print(stem, im.size, check_alpha)
 
           catalog_path = Path("pecas/assets/v2/catalog.js")
           text = catalog_path.read_text(encoding="utf-8")
           prefix = "window.ARTWORK_ASSETS="
           marker = ";\nwindow.ARTWORK_BACKGROUNDS="
+          if not text.startswith(prefix) or marker not in text:
+              raise SystemExit("Formato inesperado do catalog.js")
           assets_json, backgrounds_json = text[len(prefix):].split(marker, 1)
           assets = json.loads(assets_json)
 
@@ -127,7 +100,7 @@ jobs:
               if stem not in targets:
                   continue
               found.add(stem)
-              mw, mh, mask = catalog_masks[stem]
+              mw, mh, mask = masks[stem]
               asset["maskWidth"] = mw
               asset["maskHeight"] = mh
               asset["mask"] = mask
@@ -141,7 +114,7 @@ jobs:
               encoding="utf-8",
           )
 
-          rev = "20260930exact2"
+          rev = "20260930alpha"
           for html_path in [Path("pecas/index.html"), Path("pecas/galeria.html")]:
               html = html_path.read_text(encoding="utf-8")
               html = re.sub(r'catalog\.js\?v=[^"\']+', f'catalog.js?v={rev}', html)
@@ -170,7 +143,7 @@ jobs:
           headers_path.write_text(headers, encoding="utf-8")
           PY
 
-      - name: Remover versões antigas e arquivos temporários
+      - name: Remover versões e transporte temporários
         shell: bash
         run: |
           set -euo pipefail
@@ -178,8 +151,10 @@ jobs:
           rm -f pecas/assets/v7/IMG_2972_retalho_10.webp
           rm -f pecas/assets/v7/IMG_2972_retalho_11.webp
           rm -f pecas/assets/v7/IMG_2972_retalho_12.webp
+          rm -f .tmp-alpha-05.b64 .tmp-alpha-10.b64 .tmp-alpha-11.b64 .tmp-alpha-12.b64
           rm -f .tmp-retalho-mask-05.b64 .tmp-retalho-mask-10.b64 .tmp-retalho-mask-11.b64 .tmp-retalho-mask-12.b64
           rm -f .github/workflows/install-exact-retalhos.yml
+          rm -f .github/workflows/install-alpha-retalhos.yml
 
       - name: Validar projeto
         shell: bash
@@ -191,12 +166,12 @@ jobs:
           npm run check
           git diff --check
 
-      - name: Gravar substituição exata
+      - name: Gravar e publicar a correção
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "Instalo os quatro retalhos aprovados pixel a pixel"
+          git commit -m "Aplico a transparência aprovada aos quatro retalhos"
           git push origin HEAD:main
