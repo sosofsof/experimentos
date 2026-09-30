@@ -18,5 +18,5 @@
 /pecas/assets/v2/catalog.js
   Cache-Control: no-store
 
-/pecas/assets/v5/*
+/pecas/assets/v6/*
   Cache-Control: public, max-age=31536000, immutable
