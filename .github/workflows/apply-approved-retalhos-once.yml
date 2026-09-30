@@ -1,0 +1,196 @@
+name: Aplicar quatro retalhos aprovados uma vez
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: contains(github.event.head_commit.message, '[apply-approved-retalhos]')
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Obter repositório
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: true
+      - name: Preparar Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+      - name: Instalar Pillow
+        run: python -m pip install --disable-pip-version-check Pillow
+      - name: Gerar exatamente os quatro recortes aprovados
+        shell: bash
+        run: |
+          python - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          import base64, hashlib, json, re, zlib
+
+          targets = {
+              "05": {
+                  "stem": "IMG_2972_retalho_05",
+                  "size": (299, 684),
+                  "source_hash": "d814e53c39bc9f5d20fbd794e02590220795accfbfd8ea45a42dcd59f727efb8",
+                  "target_hash": "6d184ba62e134bfd6a9f545150151e3df60f852bb9160dfacaebad0e999dcffd",
+              },
+              "10": {
+                  "stem": "IMG_2972_retalho_10",
+                  "size": (735, 1039),
+                  "source_hash": "76a46946c3d0edca50decbb00b753feb0f75d29685115f3a2eb99d2a12b5e375",
+                  "target_hash": "0461e69f66e5424d00753e77f84283610b8c4aaba4f4bb600464cbfabdebbf40",
+              },
+              "11": {
+                  "stem": "IMG_2972_retalho_11",
+                  "size": (823, 771),
+                  "source_hash": "7246e316d4ad8a242c3d9189f0b79a074d447afbf814a620e7e1988eb1d927c4",
+                  "target_hash": "0a155cbc1f0c02afffbc0cbb090028fb9e99497de7afcbc94f2f73efbfbc45ea",
+              },
+              "12": {
+                  "stem": "IMG_2972_retalho_12",
+                  "size": (860, 260),
+                  "source_hash": "9cb5d6d891898373ea4da406f878ba9c40d5e2d6fb5d76683913e5a8895b58ac",
+                  "target_hash": "7a9aaac44b131c9d9b51a3d7265afee0472d6c705b6133d34d46e7a9f9af56d3",
+              },
+          }
+
+          def visible_hash(im):
+              data = bytearray(im.convert("RGBA").tobytes())
+              for i in range(0, len(data), 4):
+                  if data[i + 3] == 0:
+                      data[i] = data[i + 1] = data[i + 2] = 0
+              return hashlib.sha256(bytes(data)).hexdigest()
+
+          def make_mask(im):
+              w, h = im.size
+              if h >= w:
+                  mh = 96
+                  mw = max(1, round(w / h * 96))
+              else:
+                  mw = 96
+                  mh = max(1, round(h / w * 96))
+              alpha = im.getchannel("A").resize((mw, mh), Image.Resampling.LANCZOS)
+              bits = [1 if a > 16 else 0 for a in alpha.getdata()]
+              packed = bytearray((len(bits) + 7) // 8)
+              for i, bit in enumerate(bits):
+                  if bit:
+                      packed[i >> 3] |= 1 << (i & 7)
+              return mw, mh, base64.b64encode(bytes(packed)).decode("ascii")
+
+          encoded = "".join(
+              p.read_text(encoding="utf-8").strip()
+              for p in sorted(Path(".github/retalho-mask").glob("chunk-*.txt"))
+          )
+          runs_by_key = json.loads(zlib.decompress(base64.b64decode(encoded)).decode("utf-8"))
+          if set(runs_by_key) != set(targets):
+              raise SystemExit("Máscara dos quatro retalhos está incompleta.")
+
+          out_dir = Path("pecas/assets/v7")
+          out_dir.mkdir(parents=True, exist_ok=True)
+          generated_masks = {}
+
+          for key, target in targets.items():
+              source = Path("pecas/assets/v6") / (target["stem"] + ".webp")
+              im = Image.open(source).convert("RGBA")
+              if im.size != target["size"]:
+                  raise SystemExit(f'Dimensão inesperada em {target["stem"]}: {im.size}')
+              if visible_hash(im) != target["source_hash"]:
+                  raise SystemExit(f'Asset-base inesperado em {target["stem"]}; nada foi alterado.')
+
+              px = im.load()
+              for y, x0, x1 in runs_by_key[key]:
+                  for x in range(x0, x1 + 1):
+                      r, g, b, _ = px[x, y]
+                      px[x, y] = (r, g, b, 0)
+
+              if visible_hash(im) != target["target_hash"]:
+                  raise SystemExit(f'O recorte de {target["stem"]} não bate com o PNG aprovado.')
+
+              destination = out_dir / (target["stem"] + ".webp")
+              im.save(destination, "WEBP", lossless=True, quality=100, method=6, exact=True)
+              check = Image.open(destination).convert("RGBA")
+              if check.size != target["size"] or visible_hash(check) != target["target_hash"]:
+                  raise SystemExit(f'A conversão WebP de {target["stem"]} alterou o recorte.')
+
+              generated_masks[target["stem"]] = make_mask(check)
+              print(target["stem"], target["size"], target["target_hash"])
+
+          catalog_path = Path("pecas/assets/v2/catalog.js")
+          catalog_text = catalog_path.read_text(encoding="utf-8")
+          prefix = "window.ARTWORK_ASSETS="
+          marker = ";\nwindow.ARTWORK_BACKGROUNDS="
+          assets_json, backgrounds_json = catalog_text[len(prefix):].split(marker, 1)
+          assets = json.loads(assets_json)
+          found = set()
+          for asset in assets:
+              stem = asset.get("id")
+              if stem in generated_masks:
+                  found.add(stem)
+                  mw, mh, mask = generated_masks[stem]
+                  asset["maskWidth"] = mw
+                  asset["maskHeight"] = mh
+                  asset["mask"] = mask
+                  asset["src"] = f"./assets/v7/{stem}.webp"
+          if found != {target["stem"] for target in targets.values()}:
+              raise SystemExit("Catálogo não contém os quatro retalhos.")
+          catalog_path.write_text(
+              prefix + json.dumps(assets, ensure_ascii=False, separators=(",", ":")) + marker + backgrounds_json,
+              encoding="utf-8",
+          )
+
+          revision = "20260930exact"
+          for html_path in [Path("pecas/index.html"), Path("pecas/galeria.html")]:
+              html = html_path.read_text(encoding="utf-8")
+              html = re.sub(r'catalog\.js\?v=[^"\']+', f'catalog.js?v={revision}', html)
+              html = re.sub(r'\.\/galeria\.html(?:\?rev=[^"\']+)?', f'./galeria.html?rev={revision}', html)
+              html_path.write_text(html, encoding="utf-8")
+
+          api_path = Path("pecas/src/api.ts")
+          api = api_path.read_text(encoding="utf-8")
+          api = re.sub(
+              r"url\.searchParams\.set\('rev', '[^']+'\)",
+              f"url.searchParams.set('rev', '{revision}')",
+              api,
+          )
+          api_path.write_text(api, encoding="utf-8")
+
+          publication_path = Path("pecas/src/publication.ts")
+          publication = publication_path.read_text(encoding="utf-8")
+          publication = re.sub(
+              r"galeria\.html\?rev=[^']+",
+              f"galeria.html?rev={revision}",
+              publication,
+          )
+          publication_path.write_text(publication, encoding="utf-8")
+
+          headers_path = Path("scripts/static-headers")
+          headers = headers_path.read_text(encoding="utf-8")
+          headers = re.sub(
+              r"\n/pecas/assets/v6/\*\n  Cache-Control: public, max-age=31536000, immutable\n?",
+              "\n",
+              headers,
+          )
+          if "/pecas/assets/v7/*" not in headers:
+              headers = headers.rstrip() + "\n\n/pecas/assets/v7/*\n  Cache-Control: public, max-age=31536000, immutable\n"
+          headers_path.write_text(headers, encoding="utf-8")
+          PY
+      - name: Remover versões erradas e arquivos temporários
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm             pecas/assets/v6/IMG_2972_retalho_05.webp             pecas/assets/v6/IMG_2972_retalho_10.webp             pecas/assets/v6/IMG_2972_retalho_11.webp             pecas/assets/v6/IMG_2972_retalho_12.webp
+          git rm -r .github/retalho-mask
+          git rm .github/workflows/apply-approved-retalhos-once.yml
+      - name: Gravar versões aprovadas
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add             pecas/assets/v7/IMG_2972_retalho_05.webp             pecas/assets/v7/IMG_2972_retalho_10.webp             pecas/assets/v7/IMG_2972_retalho_11.webp             pecas/assets/v7/IMG_2972_retalho_12.webp             pecas/assets/v2/catalog.js             pecas/index.html             pecas/galeria.html             pecas/src/api.ts             pecas/src/publication.ts             scripts/static-headers
+          git diff --cached --check
+          git commit -m "Aplico exatamente os quatro retalhos aprovados"
+          git push origin HEAD:main
