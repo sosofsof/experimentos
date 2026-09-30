@@ -52,7 +52,7 @@ jobs:
               },
           }
 
-          out_dir = Path("pecas/assets/v7")
+          out_dir = Path("pecas/assets/v8")
           out_dir.mkdir(parents=True, exist_ok=True)
 
           def decode_ranges(path):
@@ -77,7 +77,7 @@ jobs:
 
           catalog_masks = {}
           for stem, cfg in targets.items():
-              src = Path("pecas/assets/v6") / f"{stem}.webp"
+              src = Path("pecas/assets/v7") / f"{stem}.webp"
               im = Image.open(src).convert("RGBA")
               rgba = bytearray(im.tobytes())
               pixels = im.width * im.height
@@ -125,7 +125,7 @@ jobs:
               asset["maskWidth"] = mw
               asset["maskHeight"] = mh
               asset["mask"] = mask
-              asset["src"] = f"./assets/v7/{stem}.webp"
+              asset["src"] = f"./assets/v8/{stem}.webp"
 
           if found != set(targets):
               raise SystemExit(f"Assets ausentes no catálogo: {set(targets) - found}")
@@ -135,7 +135,7 @@ jobs:
               encoding="utf-8",
           )
 
-          rev = "20260930exact"
+          rev = "20260930exact2"
           for html_path in [Path("pecas/index.html"), Path("pecas/galeria.html")]:
               html = html_path.read_text(encoding="utf-8")
               html = re.sub(r'catalog\.js\?v=[^"\']+', f'catalog.js?v={rev}', html)
@@ -155,12 +155,12 @@ jobs:
           headers_path = Path("scripts/static-headers")
           headers = headers_path.read_text(encoding="utf-8")
           headers = re.sub(
-              r"\n/pecas/assets/v6/\*\n  Cache-Control: public, max-age=31536000, immutable\n?",
+              r"\n/pecas/assets/v7/\*\n  Cache-Control: public, max-age=31536000, immutable\n?",
               "\n",
               headers,
           )
-          if "/pecas/assets/v7/*" not in headers:
-              headers = headers.rstrip() + "\n\n/pecas/assets/v7/*\n  Cache-Control: public, max-age=31536000, immutable\n"
+          if "/pecas/assets/v8/*" not in headers:
+              headers = headers.rstrip() + "\n\n/pecas/assets/v8/*\n  Cache-Control: public, max-age=31536000, immutable\n"
           headers_path.write_text(headers, encoding="utf-8")
           PY
 
@@ -168,10 +168,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rm -f pecas/assets/v6/IMG_2972_retalho_05.webp
-          rm -f pecas/assets/v6/IMG_2972_retalho_10.webp
-          rm -f pecas/assets/v6/IMG_2972_retalho_11.webp
-          rm -f pecas/assets/v6/IMG_2972_retalho_12.webp
+          rm -f pecas/assets/v7/IMG_2972_retalho_05.webp
+          rm -f pecas/assets/v7/IMG_2972_retalho_10.webp
+          rm -f pecas/assets/v7/IMG_2972_retalho_11.webp
+          rm -f pecas/assets/v7/IMG_2972_retalho_12.webp
           rm -f .tmp-retalho-mask-05.b64 .tmp-retalho-mask-10.b64 .tmp-retalho-mask-11.b64 .tmp-retalho-mask-12.b64
           rm -f .github/workflows/install-exact-retalhos.yml
 
