@@ -34,6 +34,6 @@ export const deleteArtwork = (id: string, token: string) => request<{ deleted: b
 });
 export function artworkUrl(id: string): string {
   const url = new URL('./galeria.html', location.href);
-  url.search = ''; url.searchParams.set('rev', '20260930c'); url.searchParams.set('peca', id); url.hash = '';
+  url.search = ''; url.searchParams.set('rev', '20260930exact'); url.searchParams.set('peca', id); url.hash = '';
   return url.href;
 }
