@@ -34,10 +34,10 @@ jobs:
           import base64, hashlib, json, re, zlib
 
           targets = {
-              "IMG_2972_retalho_05": (".tmp-alpha-05.b64", "8d7e0dcfdfe138c1e84dbb0d373c1422797893674b4431b122b21f59a8cb59cb"),
-              "IMG_2972_retalho_10": (".tmp-alpha-10.b64", "931bd023d6dbce09f3e768069359423285c92047206d55c23745b487508c2fca"),
-              "IMG_2972_retalho_11": (".tmp-alpha-11.b64", "539e6ba58df9033687c228460d7c3b3a344cc4d5ea3e17211669c24e03cdac35"),
-              "IMG_2972_retalho_12": (".tmp-alpha-12.b64", "0e24ef16a2db4b0156e3aecebb646e9eb3c194a0ae78934b16aec929839f20d8"),
+              "IMG_2972_retalho_05": (".tmp-alpha-05.b64", "99a23b9f4fdf260b096e44e8117a2bc80c4c185fab9c9f83c9578e61463f276a"),
+              "IMG_2972_retalho_10": (".tmp-alpha-10.b64", "94d0b10e0d2d7f91ffb6a58f7e4181126d3408c941988c3cd5a6b8cc86a6a1e9"),
+              "IMG_2972_retalho_11": (".tmp-alpha-11.b64", "0938d7a5ce47e3ed8e4be37d8792b597b280822ece2e3f0000a68ba78963aeaf"),
+              "IMG_2972_retalho_12": (".tmp-alpha-12.b64", "9ceeed1b0993f1632bb8acd3ba1149773a4b69a0a521dba7c37fbfe65cc51abb"),
           }
 
           out_dir = Path("pecas/assets/v8")
