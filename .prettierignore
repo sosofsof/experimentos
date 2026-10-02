@@ -1,0 +1,13 @@
+node_modules/
+dist/
+dist-worker/
+pecas/generated/
+.wrangler/
+.github/
+.refactor/
+pecas/assets/v1/
+AGENTS.md
+README.md
+PUBLICACAO.md
+docs/DEPLOY.md
+docs/VALIDACAO.md

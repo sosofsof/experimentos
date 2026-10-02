@@ -92,7 +92,9 @@ O [guia de configuração](docs/DEPLOY.md) explica os nomes exatos, as permissõ
 
 ## Para quem for ajudar tecnicamente
 
-O site usa HTML, CSS e JavaScript; os módulos de publicação usam TypeScript e esbuild. A hospedagem é Cloudflare Workers com arquivos estáticos; o banco existente é D1. Não há React nem etapa de lint configurada.
+O site usa HTML, CSS e JavaScript; os módulos de publicação usam TypeScript e esbuild. A hospedagem é Cloudflare Workers com arquivos estáticos; o banco existente é D1. O Rolo usa módulos TypeScript sem React. O Prettier verifica a formatação; o esbuild prepara e reduz os arquivos publicados.
+
+A organização está descrita em [docs/ARQUITETURA.md](docs/ARQUITETURA.md).
 
 Com Node.js 22 e npm:
 

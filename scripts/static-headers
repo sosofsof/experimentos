@@ -20,3 +20,15 @@
 
 /pecas/assets/v7/*
   Cache-Control: public, max-age=31536000, immutable
+
+/rolo/assets/*
+  Cache-Control: public, max-age=3600, must-revalidate
+
+/flores/assets/*
+  Cache-Control: public, max-age=3600, must-revalidate
+
+/cartas/assets/*
+  Cache-Control: public, max-age=3600, must-revalidate
+
+/assets/*
+  Cache-Control: public, max-age=3600, must-revalidate

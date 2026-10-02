@@ -1,0 +1,253 @@
+:root {
+  color-scheme: light;
+  --paper: #fff;
+  --fade: 900ms;
+  --plant-height: min(37vw, 380px, 56vh);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--paper);
+}
+
+body {
+  min-width: 100%;
+}
+
+.installation {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto auto auto;
+  align-content: center;
+  justify-items: center;
+  padding: max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right))
+    max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
+}
+
+.installation-title {
+  margin: 0 0 clamp(24px, 5vh, 48px);
+  font-size: clamp(22px, 3vw, 32px);
+  font-weight: 400;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.flowers {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(22px, 6vw, 90px);
+  width: min(100%, 1000px);
+  height: var(--plant-height);
+}
+
+.flower {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.flower img {
+  position: absolute;
+  left: 50%;
+  bottom: var(--image-bottom);
+  height: var(--image-height);
+  width: auto;
+  max-width: none;
+  display: block;
+  transform: translateX(var(--stem-offset));
+  transition: opacity var(--fade) ease-in-out;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+/* Correção aprovada: apenas 13° na flor morta do meio. */
+.flower[data-flower='rosa'] .flower__dead {
+  transform-origin: 89.577465% 98.157895%;
+  transform: translateX(-89.577465%) rotate(13deg);
+}
+
+.flower__alive {
+  opacity: 1;
+}
+.flower__dead {
+  opacity: 0;
+}
+.flower.is-dead .flower__alive {
+  opacity: 0;
+}
+.flower.is-dead .flower__dead {
+  opacity: 1;
+}
+
+/* Terceiro estado: cinzas. Agora usando o montinho realista aprovado. */
+.flower::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: clamp(-2px, -0.2vw, 0px);
+  width: clamp(92px, 58%, 185px);
+  height: clamp(52px, 18%, 122px);
+  background-image: url('./assets/cinzas.png');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center bottom;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--fade) ease-in-out;
+  transform: translateX(-50%);
+}
+
+.flower.is-ashes .flower__alive,
+.flower.is-ashes .flower__dead {
+  opacity: 0;
+}
+.flower.is-ashes::after {
+  opacity: 1;
+}
+
+.tools {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(42px, 8vw, 86px);
+  width: 100%;
+  margin-top: clamp(26px, 5vh, 54px);
+  position: relative;
+  z-index: 20;
+}
+
+.drag-tool {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  z-index: 30;
+  transition: transform 300ms cubic-bezier(0.22, 0.8, 0.25, 1);
+}
+
+.drag-tool--sun {
+  width: clamp(66px, 7.5vw, 88px);
+  aspect-ratio: 420 / 374;
+}
+
+.drag-tool--match {
+  width: clamp(42px, 4.5vw, 54px);
+  aspect-ratio: 240 / 431;
+}
+
+.drag-tool img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+}
+
+.drag-tool.is-dragging {
+  cursor: grabbing;
+  transition: none;
+  z-index: 1000;
+}
+
+.drag-tool:focus-visible {
+  outline: 1px dashed #111;
+  outline-offset: 8px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+@supports (height: 1svh) {
+  :root {
+    --plant-height: min(37vw, 380px, 56svh);
+  }
+  .installation {
+    min-height: 100svh;
+  }
+}
+
+@media (max-width: 700px) {
+  .tools {
+    gap: 38px;
+    margin-top: 24px;
+  }
+
+  .drag-tool--sun {
+    width: 68px;
+  }
+  .drag-tool--match {
+    width: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --fade: 0ms;
+  }
+  .drag-tool {
+    transition-duration: 0ms;
+  }
+}
+
+.flower[data-flower='cravo'] .flower__alive {
+  --image-height: 103.111111%;
+  --image-bottom: -1.555556%;
+  --stem-offset: -50.872818%;
+}
+
+.flower[data-flower='cravo'] .flower__dead {
+  --image-height: 103.013994%;
+  --image-bottom: -1.506997%;
+  --stem-offset: -67.169811%;
+}
+
+.flower[data-flower='rosa'] .flower__alive {
+  --image-height: 103.594352%;
+  --image-bottom: -1.797176%;
+  --stem-offset: -76.38191%;
+}
+
+.flower[data-flower='rosa'] .flower__dead {
+  --image-height: 103.825137%;
+  --image-bottom: -1.912568%;
+  --stem-offset: -89.577465%;
+}
+
+.flower[data-flower='rosa-vinho'] .flower__alive {
+  --image-height: 103.473945%;
+  --image-bottom: -1.736973%;
+  --stem-offset: -49.796748%;
+}
+
+.flower[data-flower='rosa-vinho'] .flower__dead {
+  --image-height: 103.149606%;
+  --image-bottom: -1.574803%;
+  --stem-offset: -39.160839%;
+}

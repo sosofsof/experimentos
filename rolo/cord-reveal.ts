@@ -96,9 +96,11 @@ export function initializeCordReveal({ journey, track, sequence, experience }: C
 
     const heartBounds = heart.getBoundingClientRect();
     const heartTop = heartBounds.top - viewport.top + journey.scrollTop;
-    const mainTop = distance + cloth.getBoundingClientRect().bottom - experience.getBoundingClientRect().top - 16;
-    const tailTop = heartTop + heartBounds.width * 389 / 440;
-    const tailBottom = lace.getBoundingClientRect().top - viewport.top + journey.scrollTop - (96 / 2.54) * 3;
+    const mainTop =
+      distance + cloth.getBoundingClientRect().bottom - experience.getBoundingClientRect().top - 16;
+    const tailTop = heartTop + (heartBounds.width * 389) / 440;
+    const tailBottom =
+      lace.getBoundingClientRect().top - viewport.top + journey.scrollTop - (96 / 2.54) * 3;
     const width = source.getBoundingClientRect().width;
 
     revealedTo = geometry ? revealedTo + mainTop - geometry.mainTop : mainTop;
@@ -111,7 +113,7 @@ export function initializeCordReveal({ journey, track, sequence, experience }: C
     };
     Object.assign(main.style, { left: `${anchorX}px`, top: `${mainTop}px`, width: `${width}px` });
     Object.assign(tail.style, {
-      left: `${heartBounds.left - viewport.left + heartBounds.width * 236.5 / 440}px`,
+      left: `${heartBounds.left - viewport.left + (heartBounds.width * 236.5) / 440}px`,
       top: `${tailTop}px`,
       width: `${width}px`,
     });

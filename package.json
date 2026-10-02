@@ -5,7 +5,7 @@
     "check:safety": "node scripts/check-repository.mjs",
     "check:secrets": "node scripts/check-secrets.mjs",
     "check:syntax": "node scripts/check-syntax.mjs",
-    "check": "npm run check:safety && npm run check:syntax && npm run typecheck && npm run build && npm run deploy:dry-run",
+    "check": "npm run check:safety && npm run check:syntax && npm run check:format && npm run typecheck && npm run build && npm run deploy:dry-run",
     "build": "node scripts/build.mjs",
     "typecheck": "tsc --noEmit && tsc --noEmit -p worker/tsconfig.json",
     "dev": "npm run build && wrangler dev --ip 127.0.0.1 --port 8787",
@@ -13,11 +13,14 @@
     "db:remote": "wrangler d1 migrations apply pecas-livres --remote",
     "deploy:dry-run": "wrangler deploy --dry-run --outdir dist-worker",
     "deploy:verify": "node scripts/verify-deployment.mjs",
-    "deploy": "npm run check:secrets && npm run check && wrangler deploy --keep-vars"
+    "deploy": "npm run check:secrets && npm run check && wrangler deploy --keep-vars",
+    "format": "prettier --write \"**/*.{html,css,js,mjs,ts,json,jsonc,md}\"",
+    "check:format": "prettier --check \"**/*.{html,css,js,mjs,ts,json,jsonc,md}\""
   },
   "devDependencies": {
     "@cloudflare/workers-types": "5.20260926.1",
     "esbuild": "0.28.2",
+    "prettier": "3.6.2",
     "typescript": "7.0.2",
     "wrangler": "4.144.0"
   },

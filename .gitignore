@@ -31,3 +31,5 @@ credentials*
 secrets*
 sessions/
 acesso-privado*
+
+/rolo/app.js

@@ -85,15 +85,9 @@ jobs:
               masks[stem] = make_catalog_mask(check)
               print(stem, im.size, check_alpha)
 
-          catalog_path = Path("pecas/assets/v2/catalog.js")
-          text = catalog_path.read_text(encoding="utf-8")
-          prefix = "window.ARTWORK_ASSETS="
-          marker = ";\nwindow.ARTWORK_BACKGROUNDS="
-          if not text.startswith(prefix) or marker not in text:
-              raise SystemExit("Formato inesperado do catalog.js")
-          assets_json, backgrounds_json = text[len(prefix):].split(marker, 1)
-          assets = json.loads(assets_json)
-
+          catalog_path = Path("pecas/assets/v2/catalog.json")
+          catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
+          assets = catalog["assets"]
           found = set()
           for asset in assets:
               stem = asset.get("id")
@@ -110,7 +104,7 @@ jobs:
               raise SystemExit(f"Assets ausentes no catálogo: {set(targets) - found}")
 
           catalog_path.write_text(
-              prefix + json.dumps(assets, ensure_ascii=False, separators=(",", ":")) + marker + backgrounds_json,
+              json.dumps(catalog, ensure_ascii=False, indent=2) + "\n",
               encoding="utf-8",
           )
 

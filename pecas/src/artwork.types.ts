@@ -16,6 +16,11 @@ export interface Artwork {
   createdAt: number;
 }
 export interface CatalogAsset {
+  label: string;
+  kind: string;
+  mask: string;
+  maskWidth: number;
+  maskHeight: number;
   id: string;
   width: number;
   height: number;

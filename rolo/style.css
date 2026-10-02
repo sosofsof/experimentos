@@ -1,0 +1,1153 @@
+.vertical-installation {
+  color-scheme: light;
+  --scene-height: 100vh;
+  --page-color: #fff;
+  --heart-width: clamp(180px, 26vw, 370px);
+  --heart-height: calc(var(--heart-width) * 415 / 440);
+  --cord-end: calc(var(--scene-height) * 3.5 - var(--heart-height) / 2 + 1px);
+  --cord-width: calc(var(--heart-width) * 21.538462 / 440);
+  --lace-width: min(66vw, calc(var(--scene-height) * 0.84 * 1149 / 1369), 1149px);
+  --lace-height: calc(var(--lace-width) * 1369 / 1149);
+  --lace-top: calc(var(--scene-height) * 4.5 - var(--lace-height) / 2);
+  --cord-gap: clamp(20px, calc(var(--scene-height) * 0.035), 40px);
+  --cord-tail-start: calc(
+    var(--scene-height) * 3.5 - var(--heart-height) / 2 + var(--heart-width) * 389 / 440
+  );
+  --cord-tail-end: calc(var(--lace-top) + var(--lace-height) * 360 / 1369 - var(--cord-gap) - 2cm);
+}
+@supports (height: 100svh) {
+  .vertical-installation {
+    --scene-height: 100svh;
+  }
+}
+.vertical-installation * {
+  box-sizing: border-box;
+}
+.vertical-installation {
+  margin: 0;
+  padding: 0;
+  background: var(--page-color);
+}
+.vertical-installation {
+  margin: 0;
+  min-width: 280px;
+  background: var(--page-color);
+  color: #501019;
+  overflow-x: hidden;
+}
+.installation {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: var(--page-color);
+}
+.scene {
+  position: relative;
+  width: 100%;
+  height: var(--scene-height);
+  background: transparent;
+}
+.beaded-cord {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 50%;
+  width: var(--cord-width);
+  height: var(--cord-end);
+  transform: translate(-50%);
+  background-image: var(--cord-image);
+  background-size: 100% auto;
+  background-repeat: repeat-y;
+  background-position: center top;
+  pointer-events: none;
+}
+.beaded-cord-tail {
+  z-index: 4;
+  top: var(--cord-tail-start);
+  left: calc(50% + var(--heart-width) * 26.5 / 440);
+  height: calc(var(--cord-tail-end) - var(--cord-tail-start));
+}
+.vertical-embroidery {
+  position: absolute;
+  top: 50%;
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 42%;
+  max-height: 86%;
+  transform: translateY(-50%);
+  object-fit: contain;
+}
+.scene-left .vertical-embroidery {
+  left: 4.5%;
+}
+.scene-right .vertical-embroidery {
+  right: 4.5%;
+}
+.heart-frame {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  left: 50%;
+  width: var(--heart-width);
+  height: var(--heart-height);
+  overflow: hidden;
+  transform: translate(-47.840909%, -50%);
+  background: var(--page-color);
+}
+.heart-photo {
+  position: absolute;
+  top: -106.024096%;
+  left: -68.181818%;
+  display: block;
+  width: 232.727273%;
+  height: auto;
+  max-width: none;
+}
+.scene-lace {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lace-art {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 66%;
+  max-height: 84%;
+  object-fit: contain;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+@media (max-width: 700px) and (orientation: portrait) {
+  .vertical-installation {
+    --heart-width: clamp(165px, 53vw, 290px);
+    --lace-width: min(83vw, calc(var(--scene-height) * 0.72 * 1149 / 1369), 1149px);
+  }
+  .vertical-embroidery {
+    max-width: 44%;
+    max-height: 78%;
+  }
+  .scene-left .vertical-embroidery {
+    left: 3%;
+  }
+  .scene-right .vertical-embroidery {
+    right: 3%;
+  }
+  .lace-art {
+    max-width: 83%;
+    max-height: 72%;
+  }
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .vertical-installation {
+    --heart-width: min(26vw, 56vh);
+  }
+}
+@media print {
+  .vertical-installation {
+    --scene-height: 100vh;
+  }
+  .scene {
+    break-after: page;
+  }
+  .scene:last-child {
+    break-after: auto;
+  }
+}
+:root {
+  color: #3d332a;
+  background: #f4f0e8;
+  font-synthesis: none;
+}
+@property --reveal {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+.experience {
+  height: 100dvh;
+  background-color: #f4f0e8;
+  background-size: 920px auto;
+  background-blend-mode: soft-light;
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+}
+button {
+  font: inherit;
+  color: inherit;
+}
+.horizontal-track {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  outline: none;
+  touch-action: pan-x;
+  cursor: default;
+}
+.is-unlocked .horizontal-track {
+  overflow-x: auto;
+  cursor: grab;
+  scrollbar-width: none;
+}
+.is-unlocked .horizontal-track:active {
+  cursor: grabbing;
+}
+.horizontal-track::-webkit-scrollbar {
+  display: none;
+}
+.stage {
+  position: relative;
+  --cloth-height: min(58vh, 500px);
+  --cloth-left: clamp(112px, 12vw, 190px);
+  width: calc(var(--fabric-length) + var(--cloth-left) + 12vw);
+  min-width: 100vw;
+  height: 100%;
+  --reveal: 0;
+  transition: --reveal 1.85s cubic-bezier(0.72, 0.01, 0.22, 1);
+}
+.is-unlocked .stage {
+  --reveal: 1;
+}
+.cloth {
+  position: absolute;
+  left: var(--cloth-left);
+  top: 50%;
+  width: var(--fabric-length);
+  height: var(--cloth-height);
+  transform: translateY(-50%);
+  transform-origin: left center;
+  clip-path: inset(0 calc((1 - var(--reveal)) * 100%) 0 0);
+  background-color: #e2d4b9;
+  background-position: center;
+  background-size: 880px auto;
+  background-repeat: repeat;
+  box-shadow:
+    0 14px 38px #4a392626,
+    inset 0 0 45px #6a523414;
+  will-change: clip-path;
+}
+.embroideries {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+.embroidery {
+  position: relative;
+  flex: 0 0 auto;
+}
+.embroidery-art {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+}
+.embroidery-art img {
+  position: absolute;
+  display: block;
+  max-width: none;
+  image-orientation: none;
+  -webkit-user-drag: none;
+}
+.selvedge {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background-color: #e2d4b9;
+  background-position: center;
+  background-size: 720px auto;
+  background-repeat: repeat;
+  filter: contrast(1.1);
+  opacity: 0.82;
+}
+.selvedge-top {
+  top: -6px;
+  clip-path: polygon(
+    0 30%,
+    2% 54%,
+    4% 23%,
+    7% 62%,
+    10% 28%,
+    13% 65%,
+    17% 32%,
+    21% 58%,
+    26% 27%,
+    31% 63%,
+    36% 29%,
+    41% 64%,
+    46% 33%,
+    52% 57%,
+    58% 28%,
+    64% 65%,
+    70% 31%,
+    76% 61%,
+    82% 25%,
+    88% 65%,
+    94% 32%,
+    100% 54%,
+    100% 100%,
+    0 100%
+  );
+}
+.selvedge-bottom {
+  bottom: -6px;
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% 44%,
+    96% 70%,
+    91% 36%,
+    86% 74%,
+    80% 41%,
+    74% 69%,
+    68% 38%,
+    61% 72%,
+    54% 42%,
+    47% 67%,
+    40% 37%,
+    33% 73%,
+    26% 40%,
+    19% 68%,
+    12% 36%,
+    6% 72%,
+    0 43%
+  );
+}
+.roll {
+  position: absolute;
+  left: calc(var(--cloth-left) - var(--cloth-height) * 0.13271);
+  top: 50%;
+  width: calc(var(--cloth-height) * 0.26542);
+  height: var(--cloth-height);
+  transform: translate(calc(var(--fabric-length) * var(--reveal)), -50%);
+  opacity: calc(1 - clamp(0, (var(--reveal) - 0.96) * 25, 1));
+  z-index: 3;
+  transform-origin: center center;
+  overflow: hidden;
+  will-change: transform, opacity;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.roll:disabled {
+  pointer-events: none;
+}
+.roll:focus-visible {
+  outline: 1px solid #6a5747;
+  outline-offset: 6px;
+}
+.roll-image {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  clip-path: none;
+  mix-blend-mode: normal;
+  transform: none;
+}
+@media (max-width: 700px) {
+  .stage {
+    --cloth-height: min(52vh, 390px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stage {
+    transition-duration: 0.01ms;
+  }
+}
+.journey {
+  height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+.journey.branch-open {
+  overflow-y: auto;
+}
+.experience {
+  position: relative;
+  height: 100svh;
+}
+.branch-open .horizontal-track {
+  touch-action: pan-x pan-y;
+}
+.branch-trigger {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  pointer-events: auto;
+  cursor: pointer;
+}
+.branch-trigger:focus-visible {
+  outline: 1px dashed #701c24;
+  outline-offset: 6px;
+}
+.branch-cord {
+  position: absolute;
+  z-index: 4;
+  width: clamp(8px, 1.273vw, 18.112px);
+  transform-origin: 50% 0;
+  pointer-events: none;
+}
+.branch-cord > div {
+  height: 100%;
+  background-image: inherit;
+  background-size: 100% auto;
+  background-repeat: repeat-y;
+  clip-path: inset(0);
+  animation: descend 1.3s ease-out both;
+}
+@keyframes descend {
+  0% {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+@media (max-width: 700px) and (orientation: portrait) {
+  .branch-cord {
+    width: clamp(8.077px, 2.594vw, 14.196px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .branch-cord > div {
+    animation: none;
+  }
+}
+
+html,
+body,
+#root,
+.journey,
+.experience,
+.horizontal-track,
+.vertical-installation,
+.vertical-installation .installation,
+.vertical-installation .scene {
+  background-color: #fff !important;
+}
+:root {
+  background: #fff !important;
+}
+body {
+  background: #fff !important;
+}
+.experience {
+  background-image: none !important;
+  background-blend-mode: normal !important;
+}
+
+/* The branch is physically behind the horizontal textile roll. */
+.horizontal-track {
+  z-index: 2;
+}
+.branch-cord {
+  z-index: 1 !important;
+  background-repeat: no-repeat !important;
+  background-size: 100% auto !important;
+  background-position: center top !important;
+}
+.branch-cord > div {
+  background-repeat: no-repeat !important;
+  background-size: 100% auto !important;
+  background-position: center top !important;
+}
+
+/* Use the same fixed x-origin for the whole vertical branch. */
+.vertical-installation .beaded-cord {
+  left: var(--branch-x, 50%) !important;
+  background-repeat: no-repeat !important;
+  background-size: 100% auto !important;
+  background-position: center top !important;
+}
+.vertical-installation .beaded-cord-tail {
+  left: calc(var(--branch-x, 50%) + var(--heart-width) * 26.5 / 440) !important;
+}
+.vertical-installation .heart-frame {
+  left: var(--branch-x, 50%) !important;
+}
+
+/* Clean V17: one native-scroll layout and one cord renderer. */
+html,
+body,
+#root,
+.journey {
+  background: #fff !important;
+}
+.journey {
+  position: relative !important;
+  height: 100dvh !important;
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
+}
+.journey.branch-open {
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: auto;
+}
+.experience {
+  background: transparent !important;
+}
+.horizontal-track {
+  background: transparent !important;
+  z-index: 2 !important;
+  overscroll-behavior-x: contain;
+}
+/* Native scrolling in every mode: desktop, desktop-site-on-phone and mobile. */
+.journey.branch-open .horizontal-track,
+.journey.branch-open .embroideries,
+.journey.branch-open .embroidery {
+  touch-action: pan-x pan-y pinch-zoom !important;
+}
+.journey.branch-open .branch-trigger {
+  pointer-events: none !important;
+  touch-action: pan-x pan-y pinch-zoom !important;
+}
+.cloth {
+  z-index: 4 !important;
+}
+.roll {
+  z-index: 5 !important;
+}
+
+/* Hide every renderer from the old versions. They remain only as an image source. */
+.experience .branch-cord,
+.vertical-installation .beaded-cord,
+.vertical-installation .beaded-cord-tail,
+.cord-v9,
+.cord-main-v11,
+.cord-tail-v11 {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Short distance before the first artwork, preserving the V14 layout. */
+.vertical-installation .scene-opening {
+  height: 10svh !important;
+  min-height: 72px !important;
+}
+.vertical-installation .scene-left,
+.vertical-installation .scene-right {
+  height: 68svh !important;
+  min-height: 410px !important;
+}
+.vertical-installation .scene-heart {
+  height: 86svh !important;
+  min-height: 500px !important;
+}
+.vertical-installation .vertical-embroidery {
+  position: absolute !important;
+  transform: translateY(-50%) !important;
+  z-index: 3 !important;
+}
+.vertical-installation .scene-left .vertical-embroidery {
+  top: 40% !important;
+  left: 4.5% !important;
+  right: auto !important;
+}
+.vertical-installation .scene-right .vertical-embroidery {
+  top: 50% !important;
+  right: 4.5% !important;
+  left: auto !important;
+}
+.vertical-installation .heart-frame {
+  position: absolute !important;
+  z-index: 3 !important;
+}
+.vertical-installation .lace-art {
+  position: relative !important;
+  z-index: 3 !important;
+}
+.vertical-installation,
+.vertical-installation .installation,
+.vertical-installation .scene {
+  background: #fff !important;
+}
+
+/* The clean cord: the wrapper is the reveal mask; the image itself never scales vertically. */
+.cord-clean-main,
+.cord-clean-tail {
+  position: absolute;
+  pointer-events: none;
+  transform: translateX(-50%);
+  overflow: hidden;
+}
+.cord-clean-main {
+  z-index: 1;
+  height: 0;
+}
+.cord-clean-tail {
+  z-index: 4;
+}
+.cord-clean-image {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 10000px;
+  background-repeat: no-repeat !important;
+  background-position: center top !important;
+  background-size: 100% auto !important;
+  pointer-events: none;
+}
+
+@media (max-width: 700px) and (orientation: portrait) {
+  .vertical-installation .scene-opening {
+    height: 6svh !important;
+    min-height: 44px !important;
+  }
+  .vertical-installation .scene-left,
+  .vertical-installation .scene-right {
+    height: 58svh !important;
+    min-height: 350px !important;
+  }
+  .vertical-installation .scene-heart {
+    height: 76svh !important;
+    min-height: 430px !important;
+  }
+  .vertical-installation .scene-left .vertical-embroidery {
+    top: 40% !important;
+    left: 3% !important;
+    right: auto !important;
+  }
+  .vertical-installation .scene-right .vertical-embroidery {
+    top: 50% !important;
+    right: 3% !important;
+    left: auto !important;
+  }
+}
+
+/* Keep the original textile sizing and assets; only change the scroll sequence. */
+.journey {
+  scrollbar-gutter: stable;
+}
+
+.journey.journey-started {
+  overflow-y: auto !important;
+  overscroll-behavior-y: contain;
+  overflow-anchor: none;
+}
+
+.horizontal-sequence {
+  position: relative;
+  z-index: 2;
+  height: 100svh;
+}
+
+.horizontal-sequence > .experience {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+}
+
+/* The invisible cylinder must not extend the scroll range after it unrolls. */
+.horizontal-sequence .stage {
+  overflow: hidden;
+}
+
+.journey.journey-started .horizontal-track {
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+
+.journey .horizontal-track,
+.journey .horizontal-track * {
+  touch-action: pan-x pan-y pinch-zoom !important;
+}
+
+.journey:not(.horizontal-complete) .vertical-installation {
+  visibility: hidden;
+}
+
+.journey:not(.horizontal-complete) .cord-clean-main,
+.journey:not(.horizontal-complete) .cord-clean-tail {
+  visibility: hidden;
+}
+
+.journey-hint {
+  display: none !important;
+}
+
+.embroidery-caption-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+}
+
+.embroidery-caption {
+  position: absolute;
+  margin: 0;
+  transform: translateX(-50%);
+  width: clamp(180px, 23vw, 300px);
+  color: #3d332a;
+  font-size: clamp(14px, 1.25vw, 19px);
+  line-height: 1.35;
+  text-align: center;
+  text-wrap: pretty;
+}
+
+@media (max-width: 700px) {
+  .embroidery-caption {
+    width: min(220px, 64vw);
+    font-size: 14px;
+  }
+}
+
+/* Anchor both inner fabric edges to the measured cord, on every viewport. */
+.journey .vertical-installation {
+  --work-gap: clamp(12px, 2vw, 28px);
+  --work-margin: 12px;
+}
+.journey .vertical-installation .scene-left,
+.journey .vertical-installation .scene-right {
+  height: 100svh !important;
+  min-height: 0 !important;
+}
+.journey .vertical-installation .vertical-embroidery {
+  top: 50% !important;
+  width: auto !important;
+  height: auto !important;
+  max-height: calc(100svh - 24px) !important;
+  object-fit: contain !important;
+}
+.journey .vertical-installation .scene-left .vertical-embroidery {
+  left: auto !important;
+  right: calc(100% - var(--branch-x, 50%) + var(--work-gap)) !important;
+  width: calc(var(--branch-x, 50%) - var(--work-gap) - var(--work-margin)) !important;
+  max-width: calc(var(--branch-x, 50%) - var(--work-gap) - var(--work-margin)) !important;
+  object-position: right center !important;
+}
+.journey .vertical-installation .scene-right .vertical-embroidery {
+  right: auto !important;
+  left: calc(var(--branch-x, 50%) + var(--work-gap)) !important;
+  width: calc(100% - var(--branch-x, 50%) - var(--work-gap) - var(--work-margin)) !important;
+  max-width: calc(100% - var(--branch-x, 50%) - var(--work-gap) - var(--work-margin)) !important;
+  object-position: left center !important;
+}
+
+/* Leave room for the longest caption on short landscape screens. */
+@media (max-height: 600px) {
+  .journey-started .cloth,
+  .journey-started .roll {
+    top: calc(50% - 40px);
+  }
+  .embroidery-caption {
+    font-size: 14px;
+  }
+}
+
+/* Follow the closed roll using its own sizing variables. */
+.stage::after {
+  content: '⟵ clique para abrir';
+  position: absolute;
+  left: calc(var(--cloth-left) + var(--cloth-height) * 0.13271 + 18px);
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: calc(100vw - var(--cloth-left) - var(--cloth-height) * 0.13271 - 34px);
+  font-size: clamp(18px, 2vw, 26px);
+  line-height: 1.3;
+  color: #3d332a;
+  pointer-events: none;
+}
+
+.is-unlocked .stage::after {
+  display: none;
+}
+
+/* Scene-relative text: no viewport coordinates or absolute document offsets. */
+.journey .vertical-installation {
+  position: relative;
+  --text-margin: clamp(24px, 4vw, 56px);
+}
+.journey .vertical-installation .scene-left,
+.journey .vertical-installation .scene-right {
+  height: max(100svh, var(--narrative-height, 0px)) !important;
+}
+.journey .vertical-installation .vertical-text-block {
+  box-sizing: border-box;
+  z-index: 9;
+  color: #3d332a;
+  font-size: clamp(14px, 1.25vw, 19px);
+  line-height: 1.5;
+  text-align: justify;
+  text-align-last: start;
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+}
+.vertical-text-block p {
+  margin: 0 0 1em;
+}
+.vertical-text-block p:last-child {
+  margin-bottom: 0;
+}
+.vertical-text-first,
+.vertical-text-second {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0;
+}
+.vertical-text-first {
+  left: calc(var(--branch-x, 50%) + var(--text-margin));
+  right: var(--text-margin);
+}
+.vertical-text-second {
+  left: var(--text-margin);
+  right: calc(100% - var(--branch-x, 50%) + var(--text-margin));
+}
+.journey .vertical-installation .vertical-text-after-lace {
+  position: relative;
+  width: min(600px, calc(100% - 2 * var(--text-margin)));
+  margin: 0 auto;
+  padding: 1cm 0 max(64px, env(safe-area-inset-bottom));
+  text-align: center;
+  text-align-last: center;
+}
+
+/* Match the horizontal captions on narrow and short viewports as well. */
+@media (max-width: 700px), (max-height: 600px) {
+  .journey .vertical-installation .vertical-text-block {
+    font-size: 14px;
+  }
+}
+
+/* One final artwork, positioned on the same axis as the bead cord. */
+.journey .vertical-installation .scene-switch {
+  position: relative;
+  display: block;
+  height: auto;
+  min-height: 0;
+}
+.final-switch {
+  position: relative;
+  display: block;
+  left: var(--branch-x, 50%);
+  top: auto;
+  transform: translateX(-50%);
+  width: min(320px, 73.6vw, 67.2svh);
+  aspect-ratio: 760 / 1020;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.final-switch:focus-visible {
+  outline: 2px dashed #7a1f2a;
+  outline-offset: 8px;
+}
+.final-switch img {
+  position: absolute;
+  display: block;
+  /* Present the original drawing's frame at the existing 320px width.
+     Crop only empty canvas through positioning, without resampling the asset. */
+  width: 163.026316%;
+  max-width: none;
+  height: 124.411765%;
+  left: -23.684211%;
+  top: -9.803922%;
+  object-fit: contain;
+  pointer-events: none;
+}
+.final-switch .switch-frame {
+  clip-path: polygon(
+    evenodd,
+    0% 0%,
+    100% 0%,
+    100% 100%,
+    0% 100%,
+    0% 0%,
+    26% 17%,
+    67% 17%,
+    67% 78%,
+    26% 78%,
+    26% 17%
+  );
+}
+.final-switch .switch-key {
+  clip-path: inset(22% 37% 37% 32%);
+  transform-origin: 50% 42.5%;
+  transition: transform 280ms cubic-bezier(0.55, 0.02, 0.25, 1);
+}
+.final-switch.is-off .switch-key {
+  transform: scaleY(-1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .final-switch .switch-key {
+    transition: none;
+  }
+}
+
+.journey .vertical-installation .vertical-end-spacer {
+  height: 0;
+  pointer-events: none;
+}
+
+/* Blackout happens in-place: no navigation, no remount, no position jump. */
+html.final-blackout-active,
+body.final-blackout-active,
+body.final-blackout-active .journey {
+  background: #000 !important;
+}
+
+.journey.final-blackout-active {
+  scrollbar-color: transparent transparent;
+}
+
+.journey.final-blackout-active::-webkit-scrollbar {
+  background: transparent;
+}
+
+.journey.final-blackout-active * {
+  visibility: hidden !important;
+}
+
+.journey.final-blackout-active .final-switch,
+.journey.final-blackout-active .final-switch * {
+  visibility: visible !important;
+}
+
+.journey.final-blackout-active .final-switch {
+  z-index: 2147483647;
+  cursor: pointer;
+}
+
+/* First embroidery itself is the interaction target. */
+.embroideries {
+  pointer-events: auto !important;
+}
+.embroidery {
+  pointer-events: auto !important;
+}
+.embroidery-art,
+.embroidery-art img {
+  pointer-events: none !important;
+}
+.embroidery[data-order='2'] {
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.embroidery[data-order='2'] .branch-trigger {
+  z-index: 60 !important;
+  pointer-events: auto !important;
+  touch-action: manipulation !important;
+}
+
+/* Keep the cord visually emerging from behind the lower edge of the cloth,
+     but above the transparent horizontal scroller so it cannot disappear. */
+.experience .branch-cord {
+  z-index: 5 !important;
+  pointer-events: none !important;
+}
+.experience .horizontal-track {
+  z-index: 2 !important;
+}
+.cloth {
+  z-index: 6;
+}
+.roll {
+  z-index: 7 !important;
+}
+
+/* V18: layout-only correction. Reuse the exact existing cord asset. */
+
+/* The source cord is shorter than the long desktop-site span when rendered
+     with no-repeat. Continue the SAME source vertically instead of inserting
+     another cord element, so there is no blank rupture before the heart. */
+.cord-clean-main .cord-clean-image {
+  background-repeat: repeat-y !important;
+  background-position: center top !important;
+  background-size: 100% auto !important;
+}
+
+/* The tail remains the existing cropped piece from V17/V14. Do not tile it. */
+.cord-clean-tail .cord-clean-image {
+  background-repeat: no-repeat !important;
+  background-position: center top !important;
+  background-size: 100% auto !important;
+}
+
+/* Keep the works clearly beside the cord on narrow/mobile layouts.
+     Only position/maximum size changes — no asset changes. */
+@media (max-width: 700px) and (orientation: portrait) {
+  .vertical-installation .vertical-embroidery {
+    max-width: 39% !important;
+  }
+  .vertical-installation .scene-left .vertical-embroidery {
+    left: 1.5% !important;
+    right: auto !important;
+  }
+  .vertical-installation .scene-right .vertical-embroidery {
+    right: 1.5% !important;
+    left: auto !important;
+  }
+}
+
+/* Touch devices requesting desktop layout often report a wide viewport.
+     Preserve a small central safety gap in that case as well. */
+@media (pointer: coarse) and (min-width: 701px) {
+  .vertical-installation .vertical-embroidery {
+    max-width: 40% !important;
+  }
+  .vertical-installation .scene-left .vertical-embroidery {
+    left: 2% !important;
+    right: auto !important;
+  }
+  .vertical-installation .scene-right .vertical-embroidery {
+    right: 2% !important;
+    left: auto !important;
+  }
+}
+
+/* Desktop only. Keep mobile + coarse-pointer desktop-site layout untouched. */
+@media (min-width: 901px) and (pointer: fine) {
+  .vertical-installation {
+    --desktop-work-gap: clamp(56px, 5.2vw, 92px);
+    --desktop-work-height: min(54svh, 37vw, 540px);
+  }
+
+  /* Tighten the vertical rhythm on desktop without changing the branch logic. */
+  .vertical-installation .scene-opening {
+    height: 8svh !important;
+    min-height: 64px !important;
+  }
+  .vertical-installation .scene-left,
+  .vertical-installation .scene-right {
+    height: 62svh !important;
+    min-height: 430px !important;
+  }
+  .vertical-installation .scene-heart {
+    height: 74svh !important;
+    min-height: 500px !important;
+  }
+  .vertical-installation .scene-lace {
+    height: 72svh !important;
+    min-height: 500px !important;
+  }
+
+  /* Both textile works use the same visual height. Their inner edges are
+       mirrored around the actual cord x-position, giving the exact same gap. */
+  .vertical-installation .vertical-embroidery {
+    width: auto !important;
+    height: var(--desktop-work-height) !important;
+    max-height: none !important;
+    max-width: none !important;
+    object-fit: contain !important;
+  }
+  .vertical-installation .scene-left .vertical-embroidery {
+    top: 46% !important;
+    left: auto !important;
+    right: calc(100% - var(--branch-x) + var(--desktop-work-gap)) !important;
+  }
+  .vertical-installation .scene-right .vertical-embroidery {
+    top: 50% !important;
+    right: auto !important;
+    left: calc(var(--branch-x) + var(--desktop-work-gap)) !important;
+  }
+
+  /* Keep the heart on the cord axis and lift the last textile slightly. */
+  .vertical-installation .heart-frame {
+    top: 48% !important;
+  }
+  .vertical-installation .scene-lace {
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  .vertical-installation .lace-art {
+    transform: translateY(-7%) !important;
+    max-height: 72% !important;
+    max-width: 58% !important;
+  }
+}
+
+@media (min-width: 901px) and (pointer: fine) {
+  .vertical-installation .scene-lace {
+    position: relative !important;
+    display: block !important;
+  }
+  .vertical-installation .scene-lace .lace-art {
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    right: auto !important;
+    margin: 0 !important;
+    transform: translate(-50%, -57%) !important;
+  }
+}
+
+/* Keep the final lace piece centered on the exact vertical cord axis. */
+.vertical-installation .scene-lace {
+  position: relative !important;
+  display: block !important;
+}
+.vertical-installation .scene-lace .lace-art {
+  position: absolute !important;
+  left: var(--branch-x, 50%) !important;
+  top: 50% !important;
+  right: auto !important;
+  margin: 0 !important;
+  transform: translate(-50%, -50%) !important;
+}
+@media (min-width: 901px) and (pointer: fine) {
+  .vertical-installation .scene-lace .lace-art {
+    transform: translate(-50%, -57%) !important;
+  }
+}
+
+.is-unlocked .experience,
+.is-unlocked .cloth,
+.is-unlocked .selvedge {
+  background-image: url('./assets/linen-texture.png');
+}
