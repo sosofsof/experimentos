@@ -1,0 +1,60 @@
+name: Preparar refatoração na branch de revisão
+on:
+  push:
+    branches: [feat/organizar-codigo]
+permissions:
+  contents: write
+jobs:
+  prepare:
+    if: github.ref == 'refs/heads/feat/organizar-codigo' && contains(github.event.head_commit.message, '[prepare-refactor]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      CI: 'true'
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - name: Conferir arquivos e preparar fontes
+        run: |
+          set -euo pipefail
+          npm run check:safety
+          python .refactor/prepare.py
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm install --save-dev --save-exact prettier@3.6.2 --ignore-scripts --no-audit --no-fund
+          npm run format
+      - name: Conferir scanner e código
+        run: |
+          set -euo pipefail
+          scanner_dir="$(mktemp -d "${RUNNER_TEMP}/gitleaks.XXXXXX")"
+          curl --fail --silent --show-error --location --retry 3 https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz --output "${scanner_dir}/gitleaks.tar.gz"
+          echo "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  ${scanner_dir}/gitleaks.tar.gz" | sha256sum --check --status
+          tar -xzf "${scanner_dir}/gitleaks.tar.gz" -C "${scanner_dir}" gitleaks
+          PATH="${scanner_dir}:$PATH" npm run check:secrets
+          npm run check
+          npm audit --audit-level=high
+          git diff --check
+      - name: Salvar somente na branch de revisão
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/feat/organizar-codigo
+          rm .refactor/prepare.py .refactor/app.ts .refactor/version-assets.mjs .refactor/architecture.md .github/workflows/prepare-refactor.yml
+          python - <<'PY'
+          import subprocess
+          changed = subprocess.check_output(['git','diff','--name-only','-z'])
+          created = subprocess.check_output(['git','ls-files','--others','--exclude-standard','-z'])
+          paths = list(dict.fromkeys((changed + created).split(b'\0')))
+          paths = [p for p in paths if p]
+          allowed = (b'assets/', b'cartas/', b'flores/', b'rolo/', b'pecas/', b'worker/', b'scripts/', b'docs/', b'.refactor/')
+          exact = {b'index.html',b'README.md',b'package.json',b'package-lock.json',b'tsconfig.json',b'wrangler.jsonc',b'.gitignore',b'.prettierrc.json',b'.prettierignore',b'.github/workflows/prepare-refactor.yml'}
+          assert all(p in exact or p.startswith(allowed) for p in paths), 'Caminho fora do escopo'
+          subprocess.run(['git','add','--pathspec-from-file=-','--pathspec-file-nul'],input=b'\0'.join(paths)+b'\0',check=True)
+          PY
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Organizo os experimentos e reduzo o carregamento inicial'
+          git push origin HEAD:refs/heads/feat/organizar-codigo
