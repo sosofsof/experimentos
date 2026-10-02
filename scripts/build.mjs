@@ -55,6 +55,16 @@ for (const folder of ['assets', 'pecas', 'cartas', 'flores', 'rolo']) {
 await cp(path.join(root, 'index.html'), path.join(dist, 'index.html'));
 await cp(path.join(root, 'scripts/static-headers'), path.join(dist, '_headers'));
 await import('./build-interactions.mjs');
+const catalog = JSON.parse(await readFile(path.join(root, 'pecas/assets/v2/catalog.json'), 'utf8'));
+await writeFile(
+  path.join(dist, 'pecas/assets/v2/catalog.js'),
+  'window.ARTWORK_ASSETS=' +
+    JSON.stringify(catalog.assets) +
+    ';\nwindow.ARTWORK_BACKGROUNDS=' +
+    JSON.stringify(catalog.backgrounds) +
+    ';\n',
+);
+
 await build({
   entryPoints: [path.join(root, 'pecas/editor.js')],
   outfile: path.join(dist, 'pecas/editor.js'),

@@ -31,6 +31,9 @@ A separação dos módulos mantém as consultas SQL, os limites de publicação,
 - [x] Carregar bordados conforme se aproximam da área visível e montar a continuação quando necessária.
 - [x] Carregar somente o fundo escolhido no editor e agrupar redesenhos em quadros de animação.
 - [x] Compartilhar o download de JPG e consultar os elementos por identificador em um Map.
+- [x] Separar estado, geometria e gestos do editor.
+- [x] Unificar o catálogo em uma única fonte.
+- [x] Guardar a moldura desenhada em cache para evitar repetir sua geometria a cada movimento.
 - [x] Separar rotas, operações, respostas e tipos do backend.
 - [x] Reduzir JavaScript e CSS apenas na saída do build.
 - [x] Gerar versões de arquivos a partir do conteúdo, evitando trocas manuais de parâmetros.
@@ -40,4 +43,4 @@ A separação dos módulos mantém as consultas SQL, os limites de publicação,
 
 Para continuar a manutenção, edite os arquivos fonte. Não edite `dist/`, `dist-worker/` ou `pecas/generated/`. Rode `npm run format`, os validadores descritos no README e confira manualmente os quatro experimentos. Um build verde não confirma fidelidade visual nem a integração com o banco de produção.
 
-O catálogo ainda possui as representações existentes em JSON e JavaScript; sua unificação e a divisão completa do controlador de gestos do editor são etapas pendentes. Não foi realizada limpeza de versões antigas, imagens originais ou dados da galeria.
+O catálogo tem uma fonte única em `pecas/assets/v2/catalog.json`; o JavaScript público é produzido pelo build. O editor compartilha estado, geometria e gestos em `editor-state.ts`, `editor-geometry.ts` e `editor-gestures.ts`. Não foi realizada limpeza de versões antigas, imagens originais ou dados da galeria.

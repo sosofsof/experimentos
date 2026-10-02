@@ -121,7 +121,7 @@ form.addEventListener('submit', async (event) => {
       ? 'Você pode retirar a peça neste navegador ou guardar o acesso para outro dispositivo.'
       : 'Guarde o acesso abaixo para poder retirar a peça depois.';
     element('view-published', HTMLAnchorElement).href = new URL(
-      './galeria.html?rev=20260930exact',
+      './galeria.html',
       location.href,
     ).href;
     if (!remembered) success.querySelector('details')?.setAttribute('open', '');

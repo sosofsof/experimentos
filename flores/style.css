@@ -215,3 +215,39 @@ body {
     transition-duration: 0ms;
   }
 }
+
+.flower[data-flower='cravo'] .flower__alive {
+  --image-height: 103.111111%;
+  --image-bottom: -1.555556%;
+  --stem-offset: -50.872818%;
+}
+
+.flower[data-flower='cravo'] .flower__dead {
+  --image-height: 103.013994%;
+  --image-bottom: -1.506997%;
+  --stem-offset: -67.169811%;
+}
+
+.flower[data-flower='rosa'] .flower__alive {
+  --image-height: 103.594352%;
+  --image-bottom: -1.797176%;
+  --stem-offset: -76.38191%;
+}
+
+.flower[data-flower='rosa'] .flower__dead {
+  --image-height: 103.825137%;
+  --image-bottom: -1.912568%;
+  --stem-offset: -89.577465%;
+}
+
+.flower[data-flower='rosa-vinho'] .flower__alive {
+  --image-height: 103.473945%;
+  --image-bottom: -1.736973%;
+  --stem-offset: -49.796748%;
+}
+
+.flower[data-flower='rosa-vinho'] .flower__dead {
+  --image-height: 103.149606%;
+  --image-bottom: -1.574803%;
+  --stem-offset: -39.160839%;
+}
