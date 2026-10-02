@@ -2,20 +2,20 @@
 
 O site tem quatro experimentos. O navegador recebe HTML para a estrutura, CSS para a aparência e JavaScript para as interações. TypeScript é convertido para JavaScript pelo esbuild. Node.js é usado apenas na preparação dos arquivos.
 
-| Local | Responsabilidade |
-| --- | --- |
-| `index.html`, `assets/home.css` | Menu inicial e sua aparência. |
-| `flores/index.html`, `flores/style.css`, `flores/flores.js` | Estrutura, aparência e regras das flores. |
-| `cartas/` | Seleção das cartas, animações e oração. |
-| `rolo/index.html`, `rolo/style.css` | Estrutura e estilos, com a ordem original das regras preservada. |
-| `rolo/app.ts`, `rolo/embroideries.json` | Montagem do rolo, dimensões originais e carregamento dos bordados próximos da tela. |
-| `rolo/scroll-journey.ts`, `cord-reveal.ts`, `final-switch.ts` | Rolagem lateral, continuação vertical, cordão e interruptor. |
-| `pecas/index.html`, `layout.css`, `editor.js` | Estrutura, estilos, composição e gestos do editor. |
-| `pecas/src/render.ts`, `catalog.ts`, `jpg.ts` | Desenho, consulta por identificador e download de JPG compartilhado. |
-| `pecas/src/publication.ts`, `gallery.ts`, `api.ts` | Publicação e galeria no navegador. |
-| `worker/worker.ts` | Encaminhamento das requisições e tratamento de erros e origens. |
-| `worker/artworks.ts`, `types.ts`, `response.ts`, `validation.ts` | Operações da galeria, tipos, respostas e validação. |
-| `scripts/build.mjs`, `version-assets.mjs` | Preparação, redução dos arquivos e versões automáticas para cache. |
+| Local                                                            | Responsabilidade                                                                    |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `index.html`, `assets/home.css`                                  | Menu inicial e sua aparência.                                                       |
+| `flores/index.html`, `flores/style.css`, `flores/flores.js`      | Estrutura, aparência e regras das flores.                                           |
+| `cartas/`                                                        | Seleção das cartas, animações e oração.                                             |
+| `rolo/index.html`, `rolo/style.css`                              | Estrutura e estilos, com a ordem original das regras preservada.                    |
+| `rolo/app.ts`, `rolo/embroideries.json`                          | Montagem do rolo, dimensões originais e carregamento dos bordados próximos da tela. |
+| `rolo/scroll-journey.ts`, `cord-reveal.ts`, `final-switch.ts`    | Rolagem lateral, continuação vertical, cordão e interruptor.                        |
+| `pecas/index.html`, `layout.css`, `editor.js`                    | Estrutura, estilos, composição e gestos do editor.                                  |
+| `pecas/src/render.ts`, `catalog.ts`, `jpg.ts`                    | Desenho, consulta por identificador e download de JPG compartilhado.                |
+| `pecas/src/publication.ts`, `gallery.ts`, `api.ts`               | Publicação e galeria no navegador.                                                  |
+| `worker/worker.ts`                                               | Encaminhamento das requisições e tratamento de erros e origens.                     |
+| `worker/artworks.ts`, `types.ts`, `response.ts`, `validation.ts` | Operações da galeria, tipos, respostas e validação.                                 |
+| `scripts/build.mjs`, `version-assets.mjs`                        | Preparação, redução dos arquivos e versões automáticas para cache.                  |
 
 ## Backend
 

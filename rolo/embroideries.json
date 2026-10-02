@@ -1,0 +1,122 @@
+[
+  {
+    "id": 2,
+    "file": "./assets/embroidery-02.webp",
+    "original": "IMG_2792.png",
+    "alt": "Figura diante de um espelho com a frase There is something inside of me",
+    "width": 2498,
+    "height": 3440,
+    "bounds": {
+      "x": 87,
+      "y": 196,
+      "width": 2308,
+      "height": 3056
+    },
+    "rotation": -90
+  },
+  {
+    "id": 6,
+    "file": "./assets/embroidery-06.webp",
+    "original": "IMG_2803.png",
+    "alt": "Mão com a frase Violence everywhere and love and pleasure",
+    "width": 3304,
+    "height": 2083,
+    "bounds": {
+      "x": 379,
+      "y": 245,
+      "width": 2871,
+      "height": 1779
+    },
+    "rotation": 180
+  },
+  {
+    "id": 5,
+    "file": "./assets/embroidery-05.webp",
+    "original": "IMG_2787.png",
+    "alt": "Pés, gotas e a frase My heart is so much lighter",
+    "width": 2568,
+    "height": 2151,
+    "bounds": {
+      "x": 103,
+      "y": 188,
+      "width": 2332,
+      "height": 1927
+    },
+    "rotation": 0
+  },
+  {
+    "id": 4,
+    "file": "./assets/embroidery-04.webp",
+    "original": "5ec45cf2-d3d5-43db-822b-40949f8c6198.png",
+    "alt": "Coração com fios de miçangas e a frase The end of rage, the end of pleasure",
+    "width": 2610,
+    "height": 2559,
+    "bounds": {
+      "x": 100,
+      "y": 125,
+      "width": 2400,
+      "height": 2421
+    },
+    "rotation": 0
+  },
+  {
+    "id": 7,
+    "file": "./assets/embroidery-07.webp",
+    "original": "IMG_2837.PNG",
+    "alt": "Coração e a frase I have found a way",
+    "width": 4000.0,
+    "height": 2527,
+    "bounds": {
+      "x": 617,
+      "y": 85,
+      "width": 2601,
+      "height": 2128
+    },
+    "rotation": 0
+  },
+  {
+    "id": 8,
+    "file": "./assets/embroidery-08.webp",
+    "original": "IMG_2808 (1).png",
+    "alt": "Figura com os braços abertos e a frase Still here",
+    "width": 2310,
+    "height": 3029,
+    "bounds": {
+      "x": 0,
+      "y": 165,
+      "width": 2310,
+      "height": 2820
+    },
+    "rotation": -90
+  },
+  {
+    "id": 1,
+    "file": "./assets/embroidery-01.webp",
+    "original": "IMG_2828.PNG",
+    "alt": "Rosto com lágrimas de miçangas e a frase I’m often wrong about everything, thank God",
+    "width": 953,
+    "height": 1003,
+    "bounds": {
+      "x": 9,
+      "y": 10,
+      "width": 935,
+      "height": 983
+    },
+    "rotation": -90
+  },
+  {
+    "id": 3,
+    "file": "./assets/embroidery-03.webp",
+    "original": "IMG_2952 (4).png",
+    "alt": "Olho, gotas e a palavra AMEN",
+    "width": 1650,
+    "height": 1918,
+    "bounds": {
+      "x": 364,
+      "y": 398,
+      "width": 929,
+      "height": 1344
+    },
+    "rotation": 0
+  }
+]

@@ -13,16 +13,19 @@ let opened = false;
 let continuation = false;
 let cleanupScroll: (() => void) | undefined;
 
-const observer = new IntersectionObserver(entries => {
-  for (const entry of entries) {
-    if (!entry.isIntersecting) continue;
-    const image = entry.target as HTMLImageElement;
-    image.src = image.dataset.src!;
-    observer.unobserve(image);
-  }
-}, { root: track, rootMargin: '0px 100%' });
+const observer = new IntersectionObserver(
+  (entries) => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      const image = entry.target as HTMLImageElement;
+      image.src = image.dataset.src!;
+      observer.unobserve(image);
+    }
+  },
+  { root: track, rootMargin: '0px 100%' },
+);
 
-const elements = embroideries.map(item => {
+const elements = embroideries.map((item) => {
   const wrapper = document.createElement('div');
   wrapper.className = 'embroidery';
   wrapper.dataset.order = String(item.id);
@@ -33,7 +36,9 @@ const elements = embroideries.map(item => {
   image.alt = item.alt;
   image.draggable = false;
   image.decoding = 'async';
-  art.append(image); wrapper.append(art); container.append(wrapper);
+  art.append(image);
+  wrapper.append(art);
+  container.append(wrapper);
   return { item, wrapper, art, image };
 });
 
@@ -60,7 +65,10 @@ function layout(): void {
     image.style.left = `${-item.bounds.x * scale}px`;
     image.style.top = `${-item.bounds.y * scale}px`;
   }
-  const length = Math.max(1920, Math.ceil(totalWidth + gap * (elements.length - 1) + startPadding + endPadding));
+  const length = Math.max(
+    1920,
+    Math.ceil(totalWidth + gap * (elements.length - 1) + startPadding + endPadding),
+  );
   stage.style.setProperty('--fabric-length', `${length}px`);
   container.style.gap = `${gap}px`;
   container.style.paddingLeft = `${startPadding}px`;
@@ -76,7 +84,9 @@ function revealContinuation(): void {
   if (continuation) return;
   continuation = true;
   journey.append(template.content.cloneNode(true));
-  journey.querySelector<HTMLElement>('.vertical-installation')!.style.setProperty('--cord-image', 'url("./assets/installation/image-01.webp")');
+  journey
+    .querySelector<HTMLElement>('.vertical-installation')!
+    .style.setProperty('--cord-image', 'url("./assets/installation/image-01.webp")');
   journey.classList.remove('branch-closed');
   journey.classList.add('branch-open');
   queueMicrotask(connectScroll);
@@ -90,7 +100,8 @@ roll.addEventListener('click', () => {
   experience.classList.replace('is-locked', 'is-unlocked');
   cloth.setAttribute('aria-hidden', 'false');
   track.tabIndex = 0;
-  document.querySelector('#journey-hint')!.textContent = 'Role para baixo para percorrer os bordados →';
+  document.querySelector('#journey-hint')!.textContent =
+    'Role para baixo para percorrer os bordados →';
   for (const { image } of elements) observer.observe(image);
   connectScroll();
 });

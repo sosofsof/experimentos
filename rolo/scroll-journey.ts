@@ -24,7 +24,10 @@ const EMBROIDERY_CAPTIONS = new Map([
   ['4', 'texto aqui texto aqui texto aqui texto aqui...'],
   ['7', 'texto aqui texto aqui texto aqui texto aqui texto aqui...'],
   ['8', 'texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui...'],
-  ['1', 'texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui...'],
+  [
+    '1',
+    'texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui texto aqui...',
+  ],
 ]);
 
 const VERTICAL_TEXT = {
@@ -82,7 +85,8 @@ function renderVerticalTexts(journey: HTMLElement) {
 
     const journeyBounds = journey.getBoundingClientRect();
     const switchBounds = lace!.getBoundingClientRect();
-    const switchCenter = switchBounds.top - journeyBounds.top + journey.scrollTop + switchBounds.height / 2;
+    const switchCenter =
+      switchBounds.top - journeyBounds.top + journey.scrollTop + switchBounds.height / 2;
     const desiredScrollHeight = switchCenter + journey.clientHeight / 2;
     const baseScrollHeight = journey.scrollHeight - endSpacer.offsetHeight;
     const spacerHeight = Math.max(0, desiredScrollHeight - baseScrollHeight);
@@ -188,15 +192,19 @@ export function initializeScrollJourney({ journey, track, onComplete }: JourneyE
     // Finish with the existing connection point centered, without moving it on the cloth.
     const artworkBounds = cordArtwork?.getBoundingClientRect();
     const connectionX = artworkBounds
-      ? artworkBounds.left - track.getBoundingClientRect().left + track.scrollLeft + artworkBounds.width / 2
+      ? artworkBounds.left -
+        track.getBoundingClientRect().left +
+        track.scrollLeft +
+        artworkBounds.width / 2
       : null;
     if (connectionX !== null) {
       stage.style.width = `${Math.max(track.clientWidth, Math.ceil(connectionX + track.clientWidth / 2))}px`;
       stage.style.minWidth = `${Math.max(track.clientWidth, Math.ceil(connectionX + track.clientWidth / 2))}px`;
     }
-    const nextDistance = connectionX !== null
-      ? Math.max(0, connectionX - track.clientWidth / 2)
-      : Math.max(0, track.scrollWidth - track.clientWidth);
+    const nextDistance =
+      connectionX !== null
+        ? Math.max(0, connectionX - track.clientWidth / 2)
+        : Math.max(0, track.scrollWidth - track.clientWidth);
     const height = experience.clientHeight + nextDistance;
     distance = nextDistance;
     sequence.style.height = `${height}px`;
@@ -204,9 +212,10 @@ export function initializeScrollJourney({ journey, track, onComplete }: JourneyE
 
     // Resizing preserves the current artwork, or the offset into the vertical section.
     if (measured && previousDistance > 0 && previousDistance !== distance) {
-      journey.scrollTop = previousTop >= previousDistance - END_TOLERANCE
-        ? distance + Math.max(0, previousTop - previousDistance)
-        : (previousTop / previousDistance) * distance;
+      journey.scrollTop =
+        previousTop >= previousDistance - END_TOLERANCE
+          ? distance + Math.max(0, previousTop - previousDistance)
+          : (previousTop / previousDistance) * distance;
     }
     measured = true;
     update();
@@ -215,7 +224,11 @@ export function initializeScrollJourney({ journey, track, onComplete }: JourneyE
   function onKeyDown(event: KeyboardEvent) {
     if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
     const target = event.target;
-    if (target instanceof Element && target.closest('button, a, input, textarea, select, [contenteditable="true"]')) return;
+    if (
+      target instanceof Element &&
+      target.closest('button, a, input, textarea, select, [contenteditable="true"]')
+    )
+      return;
 
     const page = journey.clientHeight * 0.85;
     const steps: Record<string, number> = {
@@ -234,7 +247,7 @@ export function initializeScrollJourney({ journey, track, onComplete }: JourneyE
       event.preventDefault();
       journey.scrollTop += steps[event.key];
     }
-    // React can commit the continuation before the next gesture reaches the boundary.
+    // The continuation can be mounted before the next gesture reaches the boundary.
     update();
   }
 
@@ -256,7 +269,13 @@ export function initializeScrollJourney({ journey, track, onComplete }: JourneyE
       return;
     }
     if (event.target instanceof Element && event.target.closest('button, a')) return;
-    drag = { pointerId: event.pointerId, x: event.clientX, y: event.clientY, axis: journey.scrollTop > distance + END_TOLERANCE ? 'y' : null, scrollTop: journey.scrollTop };
+    drag = {
+      pointerId: event.pointerId,
+      x: event.clientX,
+      y: event.clientY,
+      axis: journey.scrollTop > distance + END_TOLERANCE ? 'y' : null,
+      scrollTop: journey.scrollTop,
+    };
     track.setPointerCapture(event.pointerId);
     if (event.pointerType === 'mouse' && !drag.axis) drag.axis = 'x';
     if (event.pointerType === 'mouse') track.focus({ preventScroll: true });
@@ -271,9 +290,10 @@ export function initializeScrollJourney({ journey, track, onComplete }: JourneyE
       drag.axis = Math.abs(dx) >= Math.abs(dy) ? 'x' : 'y';
     }
     // Lock the gesture once, so diagonal swipes do not fight native scrolling.
-    journey.scrollTop = Math.max(0, drag.axis === 'x'
-      ? Math.min(distance, drag.scrollTop + dx)
-      : drag.scrollTop + dy);
+    journey.scrollTop = Math.max(
+      0,
+      drag.axis === 'x' ? Math.min(distance, drag.scrollTop + dx) : drag.scrollTop + dy,
+    );
     update();
   }
 
@@ -320,6 +340,7 @@ export function initializeScrollJourney({ journey, track, onComplete }: JourneyE
     track.removeEventListener('pointerup', endDrag);
     track.removeEventListener('pointercancel', endDrag);
     track.removeEventListener('lostpointercapture', endDrag);
-    if (drag && track.hasPointerCapture(drag.pointerId)) track.releasePointerCapture(drag.pointerId);
+    if (drag && track.hasPointerCapture(drag.pointerId))
+      track.releasePointerCapture(drag.pointerId);
   };
 }

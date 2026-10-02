@@ -15,19 +15,36 @@ try {
     await cp(path.join(root, file), destination, { dereference: false });
   }
   const report = path.join(temporary, 'report.json');
-  const result = spawnSync(process.env.GITLEAKS_BIN || 'gitleaks', [
-    'dir', snapshot, '--redact=100', '--no-banner', '--no-color', '--log-level=error',
-    '--ignore-gitleaks-allow', '--gitleaks-ignore-path', '/dev/null',
-    '--report-format=json', '--report-path', report,
-  ], { cwd: temporary, encoding: 'utf8', maxBuffer: 10 * 1024 * 1024 });
+  const result = spawnSync(
+    process.env.GITLEAKS_BIN || 'gitleaks',
+    [
+      'dir',
+      snapshot,
+      '--redact=100',
+      '--no-banner',
+      '--no-color',
+      '--log-level=error',
+      '--ignore-gitleaks-allow',
+      '--gitleaks-ignore-path',
+      '/dev/null',
+      '--report-format=json',
+      '--report-path',
+      report,
+    ],
+    { cwd: temporary, encoding: 'utf8', maxBuffer: 10 * 1024 * 1024 },
+  );
   // Never forward scanner stdout/stderr: even a tool failure may contain source snippets.
   if (result.error || result.status === null || result.status > 1) {
-    throw new Error('Scanner indisponível ou com erro. Instale Gitleaks 8.30.1; a verificação não pode ser ignorada.');
+    throw new Error(
+      'Scanner indisponível ou com erro. Instale Gitleaks 8.30.1; a verificação não pode ser ignorada.',
+    );
   }
   if (result.status !== 0) {
     const findings = JSON.parse(await readFile(report, 'utf8'));
     for (const finding of findings) {
-      const file = path.isAbsolute(finding.File) ? path.relative(snapshot, finding.File) : finding.File;
+      const file = path.isAbsolute(finding.File)
+        ? path.relative(snapshot, finding.File)
+        : finding.File;
       console.error(`FAIL: ${file}:${finding.StartLine} — ${finding.RuleID}: [REDACTED]`);
     }
     process.exitCode = 1;
