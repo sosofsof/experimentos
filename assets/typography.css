@@ -1,13 +1,13 @@
 @font-face {
-  font-family: 'Sofia Pfeffer Hand';
-  src: url('./fonts/SofiaPfefferHand-Regular.woff2') format('woff2');
+  font-family: 'Sofia Pfeffer Handwriting';
+  src: url('./fonts/SofiaPfefferHand-Regular.woff2?v=2.000') format('woff2');
   font-style: normal;
   font-weight: 400;
   font-display: swap;
 }
 
 :root {
-  --font-family: 'Sofia Pfeffer Hand', cursive;
+  --font-family: 'Sofia Pfeffer Handwriting', cursive;
   font-family: var(--font-family);
 }
 
