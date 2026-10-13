@@ -11,6 +11,8 @@ const publicExtensions = new Set([
   '.gif',
   '.svg',
   '.avif',
+  // Public 3D artwork models supplied for the textile room; no executable code.
+  '.glb',
   '.ico',
   '.woff',
   '.woff2',

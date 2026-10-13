@@ -1151,3 +1151,153 @@ body.final-blackout-active .journey {
 .is-unlocked .selvedge {
   background-image: url('./assets/linen-texture.png');
 }
+
+.room-view,
+.room-loading {
+  font-family: inherit;
+  color: #fff;
+}
+.room-view {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483600;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.room-view.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.room-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: grab;
+  -webkit-tap-highlight-color: transparent;
+}
+.room-canvas.is-dragging {
+  cursor: grabbing;
+}
+.room-canvas:focus-visible {
+  outline: 2px solid #f00;
+  outline-offset: -4px;
+}
+.room-toolbar {
+  position: absolute;
+  top: max(18px, env(safe-area-inset-top));
+  left: max(18px, env(safe-area-inset-left));
+  right: max(18px, env(safe-area-inset-right));
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.room-view button,
+.room-loading button {
+  border: 1px solid #fff;
+  background: #000;
+  color: #fff;
+  padding: 10px;
+  font: inherit;
+  font-size: 0.875rem;
+  line-height: 1.3;
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.room-view button[hidden] {
+  display: none;
+}
+.room-view button svg,
+.room-loading button svg {
+  display: block;
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.room-view.is-daylight button {
+  color: #000;
+  background: #fff;
+  border-color: #000;
+}
+.room-view.is-daylight button:hover {
+  background: #f4f4f4;
+}
+.room-view button:hover,
+.room-loading button:hover {
+  background: #121212;
+}
+.room-view button:focus-visible,
+.room-loading button:focus-visible {
+  outline: 2px solid #f00;
+  outline-offset: 4px;
+}
+.room-toolbar,
+.room-window-action {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 400ms;
+}
+.room-view.is-ready .room-toolbar,
+.room-view.is-ready .room-window-action {
+  opacity: 1;
+  visibility: visible;
+}
+.room-view .room-window-action {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+}
+.room-loading {
+  position: fixed;
+  z-index: 2147483630;
+  bottom: max(20px, env(safe-area-inset-bottom));
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 1rem;
+}
+.room-loading p {
+  margin: 0 0 12px;
+}
+body.room-active .site-navigation {
+  visibility: hidden;
+}
+body.room-active .journey {
+  overflow: hidden !important;
+}
+.journey .final-switch.switch-pinned {
+  position: fixed;
+  transform: none;
+  margin: 0;
+  aspect-ratio: auto;
+}
+.journey .final-switch.switch-in-room {
+  opacity: 0;
+  pointer-events: none;
+}
+.room-error {
+  margin: 20px auto;
+  max-width: 35rem;
+  padding: 0 24px;
+  font-size: 1rem;
+  line-height: 1.5;
+  text-align: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .room-toolbar,
+  .room-window-action {
+    transition: none;
+  }
+}
