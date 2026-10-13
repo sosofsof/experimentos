@@ -3,7 +3,11 @@ import { fileURLToPath } from 'node:url';
 
 // Compile the shared interactions into the disposable deployment output.
 await Promise.all(
-  [{ name: 'rolo/app' }, { name: 'assets/navigation' }].map(({ name, globalName }) =>
+  [
+    { name: 'rolo/app' },
+    { name: 'assets/navigation' },
+    { name: 'rolo/room', globalName: 'ExperimentRoom' },
+  ].map(({ name, globalName }) =>
     build({
       entryPoints: [fileURLToPath(new URL(`../${name}.ts`, import.meta.url))],
       outfile: fileURLToPath(new URL(`../dist/${name}.js`, import.meta.url)),

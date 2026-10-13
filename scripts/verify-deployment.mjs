@@ -16,9 +16,17 @@ const pages = [
     `/pecas/generated/${name}.js`,
     `pecas/generated/${name}.js`,
   ]),
-  ...['assets/navigation.js', 'assets/navigation.css', 'rolo/app.js', 'rolo/style.css'].map(
-    (file) => [`/${file}`, file],
-  ),
+  ...[
+    'assets/navigation.js',
+    'assets/navigation.css',
+    'rolo/app.js',
+    'rolo/style.css',
+    'rolo/room.js',
+  ].map((file) => [`/${file}`, file]),
+  ...['escrivaninha', 'mesa-de-cabeceira', 'cama-vermelha', 'cadeira-branca'].map((name) => {
+    const file = `rolo/assets/room/${name}.glb`;
+    return [`/${file}`, file];
+  }),
 ];
 const digest = (bytes) => createHash('sha256').update(bytes).digest('hex');
 
